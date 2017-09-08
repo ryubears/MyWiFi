@@ -194,12 +194,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         CURRENT_TAG = TAG_SETTINGS;
                         break;
                     case R.id.nav_contact_us:
-                        startActivity(new Intent(MainActivity.this, ContactUsActivity.class));
                         mDrawerLayout.closeDrawers();
+                        startActivity(new Intent(MainActivity.this, ContactUsActivity.class));
                         return true;
                     case R.id.nav_privacy_policy:
-                        startActivity(new Intent(MainActivity.this, PrivacyPolicyActivity.class));
                         mDrawerLayout.closeDrawers();
+                        startActivity(new Intent(MainActivity.this, PrivacyPolicyActivity.class));
                         return true;
                     default:
                         sNavItemIndex = 0;

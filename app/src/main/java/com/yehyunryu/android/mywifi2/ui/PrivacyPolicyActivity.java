@@ -17,6 +17,10 @@ public class PrivacyPolicyActivity extends AppCompatActivity {
 
         //set appropriate action bar background
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F7C43D"))); //colorPrimary
+        if(actionBar != null) {
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F7C43D"))); //colorPrimary
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }
