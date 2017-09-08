@@ -1,10 +1,12 @@
 package com.yehyunryu.android.mywifi2.ui;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -32,12 +34,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @BindView(R.id.main_nav_view) NavigationView mNavigationView;
     @BindView(R.id.main_drawer_layout) DrawerLayout mDrawerLayout;
 
+    private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
 
     private String LOG_TAG = MainActivity.class.getSimpleName();
 
     //index to identify current nav menu item
-    public static int mNavItemIndex = 0;
+    public static int sNavItemIndex = 0;
 
     //tags used to attach the fragments
     private static final String TAG_HOME = "home";
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setContentView(R.layout.activity_main);
 
         //find and attach toolbar
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.main_app_bar_layout);
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(mToolbar);
 
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //use default values if first time opening
         if(savedInstanceState == null) {
-            mNavItemIndex = 0;
+            sNavItemIndex = 0;
             CURRENT_TAG = TAG_HOME;
             loadFragment();
         }
@@ -101,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //set appropriate toolbar title
         setToolbarTitle();
 
+        //set appropriate toolbar background
+        setToolbarBackground();
+
         //checks to see if user selected current fragment; if so, just closes drawer
         if(getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
             mDrawerLayout.closeDrawers();
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         };
 
-        //check if runnable is already running, then add to queue
+        //check if runnable already exists, then add to queue
         if(mPendingRunnable != null) {
             mHandler.post(mPendingRunnable);
         }
@@ -133,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     //return current fragment
     private Fragment getFragment() {
-        switch(mNavItemIndex) {
+        switch(sNavItemIndex) {
             case 0:
                 return new HomeFragment();
             case 1:
@@ -147,12 +154,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     //set appropriate toolbar title
     private void setToolbarTitle() {
-        getSupportActionBar().setTitle(mActivityTitles[mNavItemIndex]);
+        getSupportActionBar().setTitle(mActivityTitles[sNavItemIndex]);
     }
 
     //set appropriate menu for fragment
     private void selectNavMenu() {
-        mNavigationView.getMenu().getItem(mNavItemIndex).setChecked(true);
+        mNavigationView.getMenu().getItem(sNavItemIndex).setChecked(true);
+    }
+
+    //set appropriate background and elevation for toolbar
+    private void setToolbarBackground() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(sNavItemIndex == 0) {
+                mToolbar.getBackground().setAlpha(0);
+                mAppBarLayout.setElevation(0);
+            } else {
+                mToolbar.getBackground().setAlpha(255);
+                mAppBarLayout.setElevation(8);
+            }
+        }
     }
 
     //set navigation item selection listener
@@ -162,27 +182,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.nav_home:
-                        mNavItemIndex = 0;
+                        sNavItemIndex = 0;
                         CURRENT_TAG = TAG_HOME;
                         break;
                     case R.id.nav_places:
-                        mNavItemIndex = 1;
+                        sNavItemIndex = 1;
                         CURRENT_TAG = TAG_PLACES;
                         break;
                     case R.id.nav_settings:
-                        mNavItemIndex = 2;
+                        sNavItemIndex = 2;
                         CURRENT_TAG = TAG_SETTINGS;
                         break;
                     case R.id.nav_contact_us:
                         startActivity(new Intent(MainActivity.this, ContactUsActivity.class));
                         mDrawerLayout.closeDrawers();
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            mToolbar.setElevation(8);
+                            mToolbar.getBackground().setAlpha(255);
+                        }
                         return true;
                     case R.id.nav_privacy_policy:
                         startActivity(new Intent(MainActivity.this, PrivacyPolicyActivity.class));
                         mDrawerLayout.closeDrawers();
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            mToolbar.setElevation(8);
+                            mToolbar.getBackground().setAlpha(255);
+                        }
                         return true;
                     default:
-                        mNavItemIndex = 0;
+                        sNavItemIndex = 0;
                 }
 
                 //check menu if it weren't
@@ -227,8 +255,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //loads home fragment
         if(shouldLoadHomeFragOnBackPress) {
-            if(mNavItemIndex != 0) {
-                mNavItemIndex = 0;
+            if(sNavItemIndex != 0) {
+                sNavItemIndex = 0;
                 CURRENT_TAG = TAG_HOME;
                 loadFragment();
                 return;
@@ -241,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //inflates menu for home fragment
-        if(mNavItemIndex == 0) {
+        if(sNavItemIndex == 0) {
             getMenuInflater().inflate(R.menu.home, menu);
             return true;
         }
