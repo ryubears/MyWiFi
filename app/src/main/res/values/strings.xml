@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyWiFi2</string>
+    <string name="app_name">MyWiFi</string>
     <string name="app_version">Version 1.0</string>
 
     <string name="open_drawer">open_drawer</string>

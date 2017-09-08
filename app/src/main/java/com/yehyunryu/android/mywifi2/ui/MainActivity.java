@@ -196,18 +196,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     case R.id.nav_contact_us:
                         startActivity(new Intent(MainActivity.this, ContactUsActivity.class));
                         mDrawerLayout.closeDrawers();
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            mToolbar.setElevation(8);
-                            mToolbar.getBackground().setAlpha(255);
-                        }
                         return true;
                     case R.id.nav_privacy_policy:
                         startActivity(new Intent(MainActivity.this, PrivacyPolicyActivity.class));
                         mDrawerLayout.closeDrawers();
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            mToolbar.setElevation(8);
-                            mToolbar.getBackground().setAlpha(255);
-                        }
                         return true;
                     default:
                         sNavItemIndex = 0;
