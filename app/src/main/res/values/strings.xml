@@ -22,4 +22,15 @@
 
     <!-- menu action titles -->
     <string name="home_add_menu">Add Place</string>
+
+    <!-- Settings Preference Fragment-->
+    <string name="summary_off">Disabled</string>
+    <string name="summary_on">Enabled</string>
+    <string name="location_preference_title">Location Access</string>
+    <string name="location_preference_key">preference_location</string>
+    <string name="notifications_preference_title">Notifications</string>
+    <string name="notifications_preference_key">preference_notifications</string>
+    <string name="wifi_preference_title">WiFi Access</string>
+    <string name="wifi_preference_key">preference_wifi</string>
+
 </resources>

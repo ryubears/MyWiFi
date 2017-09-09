@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
 
-    private String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     //index to identify current nav menu item
     public static int sNavItemIndex = 0;
@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setContentView(R.layout.activity_main);
 
         //find and attach toolbar
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.main_app_bar_layout);
-        mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        mAppBarLayout = findViewById(R.id.main_app_bar_layout);
+        mToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(mToolbar);
 
         //find and bind views
