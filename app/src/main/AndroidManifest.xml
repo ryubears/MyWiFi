@@ -43,6 +43,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
+        
+        <provider
+            android:name=".data.PlacesProvider"
+            android:authorities="com.yehyunryu.android.mywifi2"
+            android:exported="false" />
 
     </application>
 
