@@ -17,7 +17,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.pref_settings);
-        
+
         if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             CheckBoxPreference locationPreference = (CheckBoxPreference) findPreference(getString(R.string.location_preference_key));
             locationPreference.setChecked(true);
