@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.yehyunryu.android.mywifi2.R;
 import com.yehyunryu.android.mywifi2.data.PlacesContract;
@@ -86,7 +85,6 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
 
         @OnClick(R.id.place_clear_button)
         public void onClearClick() {
-            Toast.makeText(itemView.getContext(), "Clear", Toast.LENGTH_SHORT).show();
             itemView.getContext().getContentResolver().delete(
                     ContentUris.withAppendedId(PlacesContract.PlacesEntry.PLACES_CONTENT_URI, mPlaceId),
                     null,

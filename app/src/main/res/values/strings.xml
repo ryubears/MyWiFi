@@ -23,6 +23,11 @@
     <!-- menu action titles -->
     <string name="home_add_menu">Add Place</string>
 
+    <!-- Home Fragment -->
+    <string name="geofencing_on">Disconnect</string>
+    <string name="geofencing_off">Connect</string>
+    <string name="geofencing_key">geofencing</string>
+
     <!-- Settings Preference Fragment-->
     <string name="summary_off">Disabled</string>
     <string name="summary_on">Enabled</string>
