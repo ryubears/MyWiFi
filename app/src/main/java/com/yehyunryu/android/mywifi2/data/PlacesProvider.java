@@ -102,7 +102,7 @@ public class PlacesProvider extends ContentProvider {
                 selectionArgs = new String[] {rowId};
                 rowsDeleted = mDbHelper.getWritableDatabase().delete(
                         PlacesEntry.PLACES_TABLE_NAME,
-                        PlacesEntry._ID + " =?",
+                        PlacesEntry._ID + "=?",
                         selectionArgs
                 );
                 break;

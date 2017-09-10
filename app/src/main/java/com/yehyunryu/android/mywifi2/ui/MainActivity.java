@@ -1,5 +1,6 @@
 package com.yehyunryu.android.mywifi2.ui;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,13 +20,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.yehyunryu.android.mywifi2.R;
+import com.yehyunryu.android.mywifi2.data.PlacesContract;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -272,7 +273,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public boolean onOptionsItemSelected(MenuItem item) {
         //handles menu selection for home fragment
         if(item.getItemId() == R.id.home_add_menu) {
-            Toast.makeText(getApplicationContext(), "Add Place", Toast.LENGTH_SHORT).show();
+            //TODO: Temporary
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(PlacesContract.PlacesEntry.COLUMN_PLACE_NAME, "44 North Apartments");
+            contentValues.put(PlacesContract.PlacesEntry.COLUMN_PLACE_ADDRESS, "2701 4th Street SE, Minneapolis 55414, MN");
+            getContentResolver().insert(
+                    PlacesContract.PlacesEntry.PLACES_CONTENT_URI,
+                    contentValues
+            );
             return true;
         }
         return super.onOptionsItemSelected(item);

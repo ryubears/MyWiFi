@@ -1,5 +1,7 @@
 package com.yehyunryu.android.mywifi2.ui;
 
+import android.content.ContentUris;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yehyunryu.android.mywifi2.R;
+import com.yehyunryu.android.mywifi2.data.PlacesContract;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,13 +22,7 @@ import butterknife.OnClick;
  */
 
 public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesViewHolder> {
-    private String[] mPlacesNames;
-    private String[] mPlacesAddresses;
-
-    public PlacesAdapter(String[] placesNames, String[] placeAddresses) {
-        mPlacesNames = placesNames;
-        mPlacesAddresses = placeAddresses;
-    }
+    private Cursor mCursor;
 
     @Override
     public PlacesAdapter.PlacesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -44,10 +41,17 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
 
     @Override
     public int getItemCount() {
-        if(mPlacesNames == null || mPlacesNames.length == 0) {
+        if(mCursor == null) {
             return 0;
         }
-        return mPlacesNames.length;
+        return mCursor.getCount();
+    }
+
+    public void swapCursor(Cursor newCursor) {
+        if(newCursor != null) {
+            notifyDataSetChanged();
+        }
+        mCursor = newCursor;
     }
 
     public class PlacesViewHolder extends RecyclerView.ViewHolder {
@@ -55,19 +59,39 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
         @BindView(R.id.place_address_tv) TextView mAddressTV;
         @BindView(R.id.place_clear_button) ImageButton mClearButton;
 
+        private int mPlaceId;
+        private String mPlaceName;
+        private String mPlaceAddress;
+
+
         public PlacesViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
         public void bind(int position){
-            mNameTV.setText(mPlacesNames[position]);
-            mAddressTV.setText(mPlacesAddresses[position]);
+            mCursor.moveToPosition(position);
+
+            int indexId = mCursor.getColumnIndex(PlacesContract.PlacesEntry._ID);
+            int indexPlaceName = mCursor.getColumnIndex(PlacesContract.PlacesEntry.COLUMN_PLACE_NAME);
+            int indexPlaceAddress = mCursor.getColumnIndex(PlacesContract.PlacesEntry.COLUMN_PLACE_ADDRESS);
+
+            mPlaceId = mCursor.getInt(indexId);
+            mPlaceName = mCursor.getString(indexPlaceName);
+            mPlaceAddress = mCursor.getString(indexPlaceAddress);
+
+            mNameTV.setText(mPlaceName);
+            mAddressTV.setText(mPlaceAddress);
         }
 
         @OnClick(R.id.place_clear_button)
         public void onClearClick() {
             Toast.makeText(itemView.getContext(), "Clear", Toast.LENGTH_SHORT).show();
+            itemView.getContext().getContentResolver().delete(
+                    ContentUris.withAppendedId(PlacesContract.PlacesEntry.PLACES_CONTENT_URI, mPlaceId),
+                    null,
+                    null
+            );
         }
     }
 }
