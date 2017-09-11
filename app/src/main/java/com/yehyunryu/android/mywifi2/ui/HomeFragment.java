@@ -1,7 +1,9 @@
 package com.yehyunryu.android.mywifi2.ui;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,11 +64,19 @@ public class HomeFragment extends Fragment {
 
     private void setGeofencingOff() {
         mOnOffIV.setImageResource(R.drawable.place_off);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_off));
+        }
+        mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textPrimary));
         mOnOffButton.setText(getString(R.string.geofencing_off));
     }
 
     private void setGeofencingOn() {
         mOnOffIV.setImageResource(R.drawable.place_on_yellow);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_on));
+        }
+        mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textSecondary));
         mOnOffButton.setText(getString(R.string.geofencing_on));
     }
 }

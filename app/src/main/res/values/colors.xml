@@ -9,5 +9,7 @@
     <color name="textSecondary">#757575</color>
 
     <color name="colorSelected">#DEA409</color>
-    <color name="colorPressed">#FDF3D8</color>
+
+    <color name="geofencingPressedOff">#FDF3D8</color>
+    <color name="geofencingPressedOn">#E5E5E5</color>
 </resources>

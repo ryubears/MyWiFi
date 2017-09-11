@@ -4,8 +4,8 @@
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <corners android:radius="40dp" />
-            <solid android:color="@color/colorPressed" />
-            <stroke android:width="2dp" android:color="@color/colorPrimary" />
+            <solid android:color="@color/geofencingPressedOn" />
+            <stroke android:width="2dp" android:color="@android:color/darker_gray" />
         </shape>
     </item>
 
@@ -14,7 +14,7 @@
         <shape android:shape="rectangle">
             <corners android:radius="40dp" />
             <solid android:color="@android:color/transparent" />
-            <stroke android:width="2dp" android:color="@color/colorPrimary" />
+            <stroke android:width="2dp" android:color="@android:color/darker_gray" />
         </shape>
     </item>
 </selector>

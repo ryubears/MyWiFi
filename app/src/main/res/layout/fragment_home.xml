@@ -24,11 +24,11 @@
 
         <Button
             android:id="@+id/home_onoff_button"
-            android:layout_width="wrap_content"
+            android:layout_width="144dp"
             android:layout_height="wrap_content"
             android:text="@string/geofencing_off"
             android:textColor="@android:color/black"
-            android:background="@drawable/geofencing_button"
+            android:background="@drawable/geofencing_button_off"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
             android:layout_gravity="center"
@@ -36,6 +36,5 @@
             style="@style/Widget.AppCompat.Button.Borderless"/>
 
     </LinearLayout>
-
 
 </android.support.constraint.ConstraintLayout>
