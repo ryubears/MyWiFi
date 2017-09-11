@@ -9,6 +9,7 @@ import android.database.SQLException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.yehyunryu.android.mywifi2.data.PlacesContract.PlacesEntry;
 
@@ -17,6 +18,8 @@ import com.yehyunryu.android.mywifi2.data.PlacesContract.PlacesEntry;
  */
 
 public class PlacesProvider extends ContentProvider {
+    //tags for logging
+    private static final String LOG_TAG = PlacesProvider.class.getSimpleName();
 
     //Integer constants to identify type of Uri
     private static final int CODE_ALL_PLACES = 300;
@@ -110,19 +113,17 @@ public class PlacesProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        Log.d(LOG_TAG, "delete called");
         //number of rows deleted
         int rowsDeleted;
         //match Uri
         int match = sUriMatcher.match(uri);
         switch(match) {
-            case CODE_SINGLE_PLACE: //entire places table
-                //rowId to identify which row to delete
-                String rowId = uri.getLastPathSegment();
-                selectionArgs = new String[] {rowId};
+            case CODE_ALL_PLACES: //entire places table
                 //deletes row
                 rowsDeleted = mDbHelper.getWritableDatabase().delete(
                         PlacesEntry.PLACES_TABLE_NAME,
-                        PlacesEntry._ID + "=?",
+                        selection,
                         selectionArgs
                 );
                 break;

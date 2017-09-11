@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:text="@string/geofencing_off"
             android:textColor="@android:color/black"
-            android:background="@drawable/button_shape"
+            android:background="@drawable/geofencing_button"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
             android:layout_gravity="center"

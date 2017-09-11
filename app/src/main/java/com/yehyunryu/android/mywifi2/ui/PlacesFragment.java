@@ -42,12 +42,11 @@ import static android.app.Activity.RESULT_OK;
 import static com.yehyunryu.android.mywifi2.data.PlacesContract.PlacesEntry;
 import static com.yehyunryu.android.mywifi2.ui.MainActivity.PLACE_PICKER_REQUEST;
 
-public class PlacesFragment extends Fragment {
+public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemDeleteListener {
     @BindView(R.id.places_rv) RecyclerView mPlaceRV;
     @BindView(R.id.places_fab) FloatingActionButton mPlacesFAB;
 
     private static final String LOG_TAG = PlacesFragment.class.getSimpleName();
-    private static final int PLACES_LOADER_ID = 404;
 
     private GoogleApiClient mGoogleApiClient;
     private Geofencing mGeofencing;
@@ -61,20 +60,24 @@ public class PlacesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_places, container, false);
         ButterKnife.bind(this, rootView);
 
+        //set layout manager and adapter to recycler view
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mPlaceRV.setLayoutManager(layoutManager);
-        mAdapter = new PlacesAdapter();
+        mAdapter = new PlacesAdapter(getContext(), this);
         mPlaceRV.setAdapter(mAdapter);
 
+        //get google api client and geofencing object
         mGoogleApiClient = ((MainActivity) getActivity()).mGoogleApiClient;
         mGeofencing = ((MainActivity) getActivity()).mGeofencing;
+
+        //refresh place data
         refreshPlacesData();
 
         return rootView;
     }
 
     private void refreshPlacesData() {
-        Log.d(LOG_TAG, "refreshPlacesData");
+        //query places saved in database
         Cursor cursor = getContext().getContentResolver().query(
                 PlacesEntry.PLACES_CONTENT_URI,
                 null,
@@ -82,17 +85,30 @@ public class PlacesFragment extends Fragment {
                 null,
                 null
         );
-        if(cursor == null || cursor.getCount() == 0) return;
+
+        if(cursor == null || cursor.getCount() == 0) {
+            //return early if place is empty
+            mAdapter.swapPlaces(null);
+            return;
+        }
+        //store place id in a array list
         List<String> places = new ArrayList<>();
         while(cursor.moveToNext()) {
             places.add(cursor.getString(cursor.getColumnIndex(PlacesEntry.COLUMN_PLACE_ID)));
         }
+
+        //store GeoData in a PlaceBuffer using place id list
         PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, places.toArray(new String[places.size()]));
         placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
             @Override
             public void onResult(@NonNull PlaceBuffer places) {
+                //swap place data for recycler view
                 mAdapter.swapPlaces(places);
+
+                //update geofence list
                 mGeofencing.updateGeofencesList(places);
+
+                //register geofences if geofence is enabled
                 if(PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getString(R.string.geofencing_key), false)) {
                     mGeofencing.registerAllGeofences();
                 }
@@ -104,22 +120,28 @@ public class PlacesFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode) {
             case PLACE_PICKER_REQUEST:
+                //when place picker is called
                 if(resultCode == RESULT_OK) {
+                    //when place is picked
+
+                    //get place and check if place is empty
                     Place place = PlacePicker.getPlace(getActivity(), data);
                     if(place == null) {
-                        Log.d(LOG_TAG, "No Place Selected");
                         return;
                     }
 
+                    //get place id
                     String placeId = place.getId();
 
+                    //insert place to database
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(PlacesEntry.COLUMN_PLACE_ID, placeId);
                     getContext().getContentResolver().insert(
                             PlacesEntry.PLACES_CONTENT_URI,
                             contentValues
                     );
-                    Log.d(LOG_TAG, "Place Picked");
+
+                    //refresh place data
                     refreshPlacesData();
                 }
                 return;
@@ -132,16 +154,26 @@ public class PlacesFragment extends Fragment {
     public void onAddClick() {
         if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //TODO: Automatically switch to settings fragment
+            //show toast message
             Toast.makeText(getContext(), getString(R.string.need_location_permission), Toast.LENGTH_SHORT).show();
             return;
         }
         try {
+            //build place picker intent and start it
             Intent placePickerIntent = new PlacePicker.IntentBuilder().build(getActivity());
             startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
         } catch (GooglePlayServicesRepairableException e) {
+            //TODO: Help user to repair GooglePlayServices
             Log.d(LOG_TAG, "GooglePlayServicesRepairable");
         } catch (GooglePlayServicesNotAvailableException e) {
+            //TODO: Help user install GooglePlayServices
             Log.d(LOG_TAG, "GooglePlayServicesNotAvailable");
         }
+    }
+
+    @Override
+    public void onPlaceDelete(int position) {
+        //refresh place data when place item is deleted
+        refreshPlacesData();
     }
 }

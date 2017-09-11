@@ -55,14 +55,15 @@
         app:layout_constraintLeft_toRightOf="@id/place_icon_iv" />
 
     <ImageButton
-        android:id="@+id/place_clear_button"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:src="@drawable/clear_black"
-        android:background="@android:color/transparent"
+        android:id="@+id/place_delete_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/delete_black"
+        android:background="@drawable/delete_button"
         android:scaleType="centerCrop"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="8dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
