@@ -28,6 +28,8 @@
     <string name="geofencing_off">Connect</string>
     <string name="geofencing_key">geofencing</string>
 
+    <string name="need_location_permission">Enable Location Permission First</string>
+
     <!-- Settings Preference Fragment-->
     <string name="summary_off">Disabled</string>
     <string name="summary_on">Enabled</string>

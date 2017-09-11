@@ -1,6 +1,5 @@
 package com.yehyunryu.android.mywifi2.ui;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -26,7 +24,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.yehyunryu.android.mywifi2.R;
-import com.yehyunryu.android.mywifi2.data.PlacesContract;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Toolbar mToolbar;
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    public static final int PLACE_PICKER_REQUEST = 505;
 
     //index to identify current nav menu item
     public static int sNavItemIndex = 0;
@@ -57,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Handler mHandler;
 
     //GoogleApiClient to access Google Apis
-    private GoogleApiClient mGoogleApiClient;
+    public GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,33 +255,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         super.onBackPressed();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //inflates menu for home fragment
-        if(sNavItemIndex == 0) {
-            getMenuInflater().inflate(R.menu.home, menu);
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //handles menu selection for home fragment
-        if(item.getItemId() == R.id.home_add_menu) {
-            //TODO: Temporary
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(PlacesContract.PlacesEntry.COLUMN_PLACE_NAME, "44 North Apartments");
-            contentValues.put(PlacesContract.PlacesEntry.COLUMN_PLACE_ADDRESS, "2701 4th Street SE, Minneapolis 55414, MN");
-            getContentResolver().insert(
-                    PlacesContract.PlacesEntry.PLACES_CONTENT_URI,
-                    contentValues
-            );
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

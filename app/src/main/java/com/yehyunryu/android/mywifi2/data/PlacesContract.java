@@ -23,8 +23,6 @@ public class PlacesContract {
 
         public static final String _ID = BaseColumns._ID;
 
-        public static final String COLUMN_PLACE_NAME = "place_name";
-
-        public static final String COLUMN_PLACE_ADDRESS = "place_address";
+        public static final String COLUMN_PLACE_ID = "place_id";
     }
 }

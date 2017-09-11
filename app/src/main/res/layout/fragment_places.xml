@@ -18,7 +18,7 @@
         android:id="@+id/places_fab"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_margin="16dp"
+        android:layout_margin="24dp"
         android:src="@drawable/add_black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

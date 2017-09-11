@@ -25,8 +25,7 @@ public class PlacesDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_PLACES_TABLE =
                 "CREATE TABLE " + PlacesEntry.PLACES_TABLE_NAME + " (" +
                         PlacesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        PlacesEntry.COLUMN_PLACE_NAME + " TEXT NOT NULL, " +
-                        PlacesEntry.COLUMN_PLACE_ADDRESS + " TEXT NOT NULL);";
+                        PlacesEntry.COLUMN_PLACE_ID + " TEXT NOT NULL);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_PLACES_TABLE);
     }
