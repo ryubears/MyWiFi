@@ -36,7 +36,8 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("WiFi Turned On")
-                    .setContentText("MyWiFi turned on your wifi.");
+                    .setContentText("MyWiFi turned on your wifi.")
+                    .setAutoCancel(true);
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(notificationId, builder.build());

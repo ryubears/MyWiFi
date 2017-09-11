@@ -18,13 +18,17 @@ import com.yehyunryu.android.mywifi2.data.PlacesContract.PlacesEntry;
 
 public class PlacesProvider extends ContentProvider {
 
+    //Integer constants to identify type of Uri
     private static final int CODE_ALL_PLACES = 300;
     private static final int CODE_SINGLE_PLACE = 301;
 
+    //UriMatcher to return type of Uri
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
+    //SQLiteOpenHelper is helper class to manage database creation and version management
     private PlacesDbHelper mDbHelper;
 
+    //Builds and return UriMatcher
     private static UriMatcher buildUriMatcher() {
         final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String contentAuthority = PlacesContract.CONTENT_AUTHORITY;
@@ -43,10 +47,13 @@ public class PlacesProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        //cursor to return
         Cursor cursor;
+        //matches Uri
         int match = sUriMatcher.match(uri);
         switch(match) {
-            case CODE_ALL_PLACES:
+            case CODE_ALL_PLACES: //entire place table
+                //queries entire table
                 cursor = mDbHelper.getReadableDatabase().query(
                         PlacesEntry.PLACES_TABLE_NAME,
                         projection,
@@ -61,6 +68,7 @@ public class PlacesProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Invalid uri: " + uri);
         }
 
+        //registers Uri to watch for changes
         if(cursor != null) {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
@@ -70,16 +78,22 @@ public class PlacesProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+        //Uri to return
         Uri returnUri;
+
+        //matches Uri
         int match = sUriMatcher.match(uri);
         switch(match) {
-            case CODE_ALL_PLACES:
+            case CODE_ALL_PLACES: //entire place table
+                //insert and receive row id
                 long id = mDbHelper.getWritableDatabase().insert(
                         PlacesEntry.PLACES_TABLE_NAME,
                         null,
                         contentValues
                 );
+                //checks if insertion failed
                 if(id != -1) {
+                    //create return Uri
                     returnUri = ContentUris.withAppendedId(PlacesEntry.PLACES_CONTENT_URI, id);
                 } else {
                     throw new SQLException("Failed to insert: " + uri);
@@ -88,18 +102,24 @@ public class PlacesProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Invalid uri: " + uri);
         }
+
+        //notifies changes to content resolver
         getContext().getContentResolver().notifyChange(PlacesEntry.PLACES_CONTENT_URI, null);
         return returnUri;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        //number of rows deleted
         int rowsDeleted;
+        //match Uri
         int match = sUriMatcher.match(uri);
         switch(match) {
-            case CODE_SINGLE_PLACE:
+            case CODE_SINGLE_PLACE: //entire places table
+                //rowId to identify which row to delete
                 String rowId = uri.getLastPathSegment();
                 selectionArgs = new String[] {rowId};
+                //deletes row
                 rowsDeleted = mDbHelper.getWritableDatabase().delete(
                         PlacesEntry.PLACES_TABLE_NAME,
                         PlacesEntry._ID + "=?",
@@ -110,6 +130,7 @@ public class PlacesProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Invalid uri: " + uri);
         }
 
+        //notifies changes to content resolver if any row was deleted
         if(rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(PlacesEntry.PLACES_CONTENT_URI, null);
         }

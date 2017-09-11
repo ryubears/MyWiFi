@@ -12,8 +12,10 @@ import com.yehyunryu.android.mywifi2.data.PlacesContract.PlacesEntry;
 
 public class PlacesDbHelper extends SQLiteOpenHelper {
 
+    //Name of database
     public static final String DATABASE_NAME = "places.db";
 
+    //Database version
     public static final int DATABASE_VERSION = 1;
 
     public PlacesDbHelper(Context context) {
@@ -22,11 +24,13 @@ public class PlacesDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        final String SQL_CREATE_PLACES_TABLE =
-                "CREATE TABLE " + PlacesEntry.PLACES_TABLE_NAME + " (" +
-                        PlacesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        PlacesEntry.COLUMN_PLACE_ID + " TEXT NOT NULL);";
+        //SQLite statement that creates a SQLite database
+        final String SQL_CREATE_PLACES_TABLE = "CREATE TABLE " + PlacesEntry.PLACES_TABLE_NAME + " (" +
+                PlacesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                PlacesEntry.COLUMN_PLACE_ID + " TEXT NOT NULL, " +
+                "UNIQUE (" + PlacesEntry.COLUMN_PLACE_ID + ") ON CONFLICT REPLACE);";
 
+        //executes above SQLite statement
         sqLiteDatabase.execSQL(SQL_CREATE_PLACES_TABLE);
     }
 
