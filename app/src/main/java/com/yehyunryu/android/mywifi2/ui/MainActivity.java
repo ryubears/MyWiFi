@@ -24,6 +24,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.yehyunryu.android.mywifi2.R;
+import com.yehyunryu.android.mywifi2.utils.Geofencing;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     //GoogleApiClient to access Google Apis
     public GoogleApiClient mGoogleApiClient;
+    public Geofencing mGeofencing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .addApi(Places.GEO_DATA_API)
                 .enableAutoManage(this, this)
                 .build();
+
+        mGeofencing = new Geofencing(this, mGoogleApiClient);
     }
 
     //loads selected fragment

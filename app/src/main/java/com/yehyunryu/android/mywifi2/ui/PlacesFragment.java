@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.yehyunryu.android.mywifi2.R;
+import com.yehyunryu.android.mywifi2.utils.Geofencing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,7 @@ public class PlacesFragment extends Fragment {
     private static final int PLACES_LOADER_ID = 404;
 
     private GoogleApiClient mGoogleApiClient;
+    private Geofencing mGeofencing;
     private PlacesAdapter mAdapter;
 
     @Override
@@ -64,12 +67,14 @@ public class PlacesFragment extends Fragment {
         mPlaceRV.setAdapter(mAdapter);
 
         mGoogleApiClient = ((MainActivity) getActivity()).mGoogleApiClient;
+        mGeofencing = ((MainActivity) getActivity()).mGeofencing;
         refreshPlacesData();
 
         return rootView;
     }
 
     private void refreshPlacesData() {
+        Log.d(LOG_TAG, "refreshPlacesData");
         Cursor cursor = getContext().getContentResolver().query(
                 PlacesEntry.PLACES_CONTENT_URI,
                 null,
@@ -87,6 +92,10 @@ public class PlacesFragment extends Fragment {
             @Override
             public void onResult(@NonNull PlaceBuffer places) {
                 mAdapter.swapPlaces(places);
+                mGeofencing.updateGeofencesList(places);
+                if(PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getString(R.string.geofencing_key), false)) {
+                    mGeofencing.registerAllGeofences();
+                }
             }
         });
     }

@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.yehyunryu.android.mywifi2.R;
+import com.yehyunryu.android.mywifi2.utils.Geofencing;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,6 +21,8 @@ public class HomeFragment extends Fragment {
     @BindView(R.id.home_onoff_iv) ImageView mOnOffIV;
     @BindView(R.id.home_onoff_button) Button mOnOffButton;
 
+    private Geofencing mGeofencing;
+    private GoogleApiClient mGoogleApiClient;
     private boolean mIsGeofencing;
 
     @Override
@@ -26,6 +30,9 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, rootView);
+
+        mGoogleApiClient = ((MainActivity) getActivity()).mGoogleApiClient;
+        mGeofencing = ((MainActivity) getActivity()).mGeofencing;
 
         mIsGeofencing = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getString(R.string.geofencing_key), false);
         if(mIsGeofencing) {
@@ -44,10 +51,12 @@ public class HomeFragment extends Fragment {
             mIsGeofencing = false;
             setGeofencingOff();
             PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean(getString(R.string.geofencing_key), false).apply();
+            mGeofencing.unregisterAllGeofences();
         } else {
             mIsGeofencing = true;
             setGeofencingOn();
             PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean(getString(R.string.geofencing_key), true).apply();
+            mGeofencing.registerAllGeofences();
         }
     }
 
