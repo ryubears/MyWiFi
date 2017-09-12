@@ -44,4 +44,10 @@
     <string name="wifi_preference_title">WiFi Access</string>
     <string name="wifi_preference_key">preference_wifi</string>
 
+    <!-- Notifications -->
+    <string name="wifi_enabled_notification_title">WiFi is ON</string>
+    <string name="wifi_enabled_notification_text">MyWiFi has turned your WiFi on.</string>
+    <string name="wifi_denied_notification_title">WiFi is OFF</string>
+    <string name="wifi_denied_notification_text">Turn on your WiFi?</string>
+
 </resources>

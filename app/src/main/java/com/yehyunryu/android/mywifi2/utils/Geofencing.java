@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class Geofencing implements ResultCallback {
     private static final String LOG_TAG = Geofencing.class.getSimpleName();
     private static final long GEOFENCE_DURATION = TimeUnit.DAYS.toMillis(1);
-    private static final float GEOFENCE_RADIUS = 50f;
+    private static final float GEOFENCE_RADIUS = 100f;
 
     private List<Geofence> mGeofenceList;
     private PendingIntent mGeofencePendingIntent;
