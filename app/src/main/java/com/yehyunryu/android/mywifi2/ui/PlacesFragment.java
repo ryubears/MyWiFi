@@ -89,7 +89,7 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
         );
 
         if(cursor == null || cursor.getCount() == 0) {
-            //return early if place is empty
+            //display empty view and return early
             mEmptyView.setVisibility(View.VISIBLE);
             mAdapter.swapPlaces(null);
             return;
@@ -139,6 +139,7 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
                     String placeId = place.getId();
 
                     //insert place to database
+                    //TODO: Use AsyncTask
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(PlacesEntry.COLUMN_PLACE_ID, placeId);
                     getContext().getContentResolver().insert(

@@ -37,7 +37,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Toolbar mToolbar;
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-    public static final int PLACE_PICKER_REQUEST = 505;
+
+    //place picker intent id
+    public static final int PLACE_PICKER_REQUEST = 500;
 
     //index to identify current nav menu item
     public static int sNavItemIndex = 0;
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .enableAutoManage(this, this)
                 .build();
 
+        //create geofencing object
         mGeofencing = new Geofencing(this, mGoogleApiClient);
     }
 

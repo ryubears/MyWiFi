@@ -42,11 +42,13 @@ public class Geofencing implements ResultCallback {
     }
 
     public void registerAllGeofences() {
+        //if google api client is not connected or if geofence list is empty return early
         if(mGoogleApiClient == null || !mGoogleApiClient.isConnected() ||
                 mGeofenceList == null || mGeofenceList.size() == 0) {
             return;
         }
 
+        //add geofences using Google Location Services
         try {
             LocationServices.GeofencingApi.addGeofences(
                     mGoogleApiClient,
@@ -59,8 +61,10 @@ public class Geofencing implements ResultCallback {
     }
 
     public void unregisterAllGeofences() {
+        //check if google api client is connected and return early if so
         if(mGoogleApiClient == null || !mGoogleApiClient.isConnected()) return;
 
+        //remove geofences
         try {
             LocationServices.GeofencingApi.removeGeofences(
                     mGoogleApiClient,
@@ -72,6 +76,7 @@ public class Geofencing implements ResultCallback {
     }
 
     public void updateGeofencesList(PlaceBuffer places) {
+        //loop through each place and build a geofence object and set its specifications
         mGeofenceList = new ArrayList<>();
         if(places == null || places.getCount() == 0) return;
         for(Place place: places) {
@@ -86,11 +91,13 @@ public class Geofencing implements ResultCallback {
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                     .build();
 
+            //add geofence object to list
             mGeofenceList.add(geofence);
         }
     }
 
     private GeofencingRequest getGeofencingRequest() {
+        //create geofencing request and set initial trigger for all listed geofences
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofences(mGeofenceList);
@@ -98,9 +105,11 @@ public class Geofencing implements ResultCallback {
     }
 
     private PendingIntent getGeofencePendingIntent() {
+        //return early if pending intent already exists
         if(mGeofencePendingIntent != null) {
             return mGeofencePendingIntent;
         }
+        //create pending intent that triggers geofence broadcast receiver
         Intent intent = new Intent(mContext, GeofenceBroadcastReceiver.class);
         mGeofencePendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return mGeofencePendingIntent;
@@ -108,6 +117,7 @@ public class Geofencing implements ResultCallback {
 
     @Override
     public void onResult(@NonNull Result result) {
+        //error logging for geofencing
         Log.e(LOG_TAG, String.format("Error adding/removing geofence : %s", result.getStatus().toString()));
     }
 }
