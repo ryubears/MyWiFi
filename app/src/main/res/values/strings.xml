@@ -31,7 +31,8 @@
     <string name="need_location_permission">Enable Location Permission First</string>
 
     <!-- Places Fragment -->
-    <string name="toast_delete">Deleted</string>
+    <string name="toast_delete">Item Deleted</string>
+    <string name="empty_view_text">Start adding places!</string>
 
     <!-- Settings Preference Fragment-->
     <string name="summary_off">Disabled</string>

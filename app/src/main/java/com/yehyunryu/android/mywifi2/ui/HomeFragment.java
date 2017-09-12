@@ -36,7 +36,7 @@ public class HomeFragment extends Fragment {
         mGoogleApiClient = ((MainActivity) getActivity()).mGoogleApiClient;
         mGeofencing = ((MainActivity) getActivity()).mGeofencing;
 
-        mIsGeofencing = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getString(R.string.geofencing_key), false);
+        mIsGeofencing = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getContext().getString(R.string.geofencing_key), false);
         if(mIsGeofencing) {
             setGeofencingOn();
         } else {

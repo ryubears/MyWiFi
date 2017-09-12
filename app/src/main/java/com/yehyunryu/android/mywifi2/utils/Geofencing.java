@@ -42,7 +42,6 @@ public class Geofencing implements ResultCallback {
     }
 
     public void registerAllGeofences() {
-        Log.d(LOG_TAG, "registerAllGeofences");
         if(mGoogleApiClient == null || !mGoogleApiClient.isConnected() ||
                 mGeofenceList == null || mGeofenceList.size() == 0) {
             return;

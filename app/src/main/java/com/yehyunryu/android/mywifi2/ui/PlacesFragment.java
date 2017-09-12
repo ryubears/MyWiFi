@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -45,6 +46,7 @@ import static com.yehyunryu.android.mywifi2.ui.MainActivity.PLACE_PICKER_REQUEST
 public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemDeleteListener {
     @BindView(R.id.places_rv) RecyclerView mPlaceRV;
     @BindView(R.id.places_fab) FloatingActionButton mPlacesFAB;
+    @BindView(R.id.places_empty_view) LinearLayout mEmptyView;
 
     private static final String LOG_TAG = PlacesFragment.class.getSimpleName();
 
@@ -88,8 +90,11 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
 
         if(cursor == null || cursor.getCount() == 0) {
             //return early if place is empty
+            mEmptyView.setVisibility(View.VISIBLE);
             mAdapter.swapPlaces(null);
             return;
+        } else {
+            mEmptyView.setVisibility(View.GONE);
         }
         //store place id in a array list
         List<String> places = new ArrayList<>();
@@ -152,6 +157,27 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
 
     @OnClick(R.id.places_fab)
     public void onAddClick() {
+        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //TODO: Automatically switch to settings fragment
+            //show toast message
+            Toast.makeText(getContext(), getString(R.string.need_location_permission), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            //build place picker intent and start it
+            Intent placePickerIntent = new PlacePicker.IntentBuilder().build(getActivity());
+            startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+            //TODO: Help user to repair GooglePlayServices
+            Log.d(LOG_TAG, "GooglePlayServicesRepairable");
+        } catch (GooglePlayServicesNotAvailableException e) {
+            //TODO: Help user install GooglePlayServices
+            Log.d(LOG_TAG, "GooglePlayServicesNotAvailable");
+        }
+    }
+
+    @OnClick(R.id.places_empty_view)
+    public void onEmptyClick() {
         if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //TODO: Automatically switch to settings fragment
             //show toast message
