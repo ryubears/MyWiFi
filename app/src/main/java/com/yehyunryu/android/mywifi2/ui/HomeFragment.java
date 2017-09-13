@@ -1,17 +1,24 @@
 package com.yehyunryu.android.mywifi2.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.yehyunryu.android.mywifi2.R;
+import com.yehyunryu.android.mywifi2.service.CountdownTimerService;
 import com.yehyunryu.android.mywifi2.utils.Geofencing;
 
 import butterknife.BindView;
@@ -21,6 +28,9 @@ import butterknife.OnClick;
 public class HomeFragment extends Fragment {
     @BindView(R.id.home_onoff_iv) ImageView mOnOffIV;
     @BindView(R.id.home_onoff_button) Button mOnOffButton;
+    @BindView(R.id.home_timer) TextView mTimerTV;
+
+    private static final String LOG_TAG = HomeFragment.class.getSimpleName();
 
     //geofencing object and state of geofencing
     private Geofencing mGeofencing;
@@ -68,6 +78,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void setGeofencingOff() {
+        getActivity().stopService(new Intent(getContext(), CountdownTimerService.class));
+        mTimerTV.setVisibility(View.GONE);
+
         //set appropriate icon and text to indicate that geofencing is off
         mOnOffIV.setImageResource(R.drawable.place_off);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -78,6 +91,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void setGeofencingOn() {
+        getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
+        mTimerTV.setVisibility(View.VISIBLE);
+
         //set appropriate icon and text to indicate that geofencing is on
         mOnOffIV.setImageResource(R.drawable.place_on_yellow);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -85,5 +101,33 @@ public class HomeFragment extends Fragment {
         }
         mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textSecondary));
         mOnOffButton.setText(getString(R.string.geofencing_on));
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateGUI(intent);
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(mBroadcastReceiver, new IntentFilter(CountdownTimerService.ACTION_COUNTDOWN));
+        Log.d(LOG_TAG, "Registered broadcast receiver");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mBroadcastReceiver);
+        Log.d(LOG_TAG, "Unregistered broadcast receiver");
+    }
+
+    private void updateGUI(Intent intent) {
+        if(intent.getExtras() != null) {
+            long millisUntilFinished = intent.getLongExtra("countdown", 0);
+            mTimerTV.setText(String.valueOf(millisUntilFinished));
+        }
     }
 }

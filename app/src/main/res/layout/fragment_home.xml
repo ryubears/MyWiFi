@@ -22,6 +22,18 @@
             android:src="@drawable/place_off"
             android:scaleType="centerCrop" />
 
+        <TextView
+            android:id="@+id/home_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:text="24:00:00"
+            android:textColor="@android:color/black"
+            android:textSize="28sp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"/>
+
+
         <Button
             android:id="@+id/home_onoff_button"
             android:layout_width="144dp"
@@ -32,7 +44,7 @@
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
             android:layout_gravity="center"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             style="@style/Widget.AppCompat.Button.Borderless"/>
 
     </LinearLayout>
