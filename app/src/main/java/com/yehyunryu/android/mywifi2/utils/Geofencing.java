@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -14,6 +15,7 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
+import com.yehyunryu.android.mywifi2.R;
 import com.yehyunryu.android.mywifi2.receivers.GeofenceBroadcastReceiver;
 
 import java.util.ArrayList;
@@ -84,9 +86,23 @@ public class Geofencing implements ResultCallback {
             double placeLat = place.getLatLng().latitude;
             double placeLng = place.getLatLng().longitude;
 
+            long durationTime;
+            long beginTime = PreferenceManager.getDefaultSharedPreferences(mContext).getLong(mContext.getString(R.string.geofencing_time_key), -1);
+            long currentTime = System.currentTimeMillis();
+
+            if(beginTime <= 0) {
+                durationTime = GEOFENCE_DURATION;
+            } else if(currentTime - beginTime > TimeUnit.DAYS.toMillis(1)) {
+                durationTime = GEOFENCE_DURATION;
+            } else {
+                durationTime = GEOFENCE_DURATION - (currentTime - beginTime);
+            }
+
+            Log.d(LOG_TAG, "Duration Time: " + durationTime);
+
             Geofence geofence = new Geofence.Builder()
                     .setRequestId(placeId)
-                    .setExpirationDuration(GEOFENCE_DURATION)
+                    .setExpirationDuration(durationTime)
                     .setCircularRegion(placeLat, placeLng, GEOFENCE_RADIUS)
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                     .build();
@@ -118,6 +134,6 @@ public class Geofencing implements ResultCallback {
     @Override
     public void onResult(@NonNull Result result) {
         //error logging for geofencing
-        Log.d(LOG_TAG, String.format("Geofence Result : %s", result.getStatus().toString()));
+        Log.d(LOG_TAG, String.format("Geofence Result: %s", result.getStatus().toString()));
     }
 }

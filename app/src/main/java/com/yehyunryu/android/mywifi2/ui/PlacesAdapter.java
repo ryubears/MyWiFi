@@ -64,6 +64,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
 
     //used to change PlaceBuffer data
     public void swapPlaces(PlaceBuffer places) {
+        if(mPlaces != null) mPlaces.release();
         notifyDataSetChanged();
         mPlaces = places;
     }

@@ -72,10 +72,46 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
         mGoogleApiClient = ((MainActivity) getActivity()).mGoogleApiClient;
         mGeofencing = ((MainActivity) getActivity()).mGeofencing;
 
-        //refresh place data
-        refreshPlacesData();
+        //get place data
+        getPlacesData();
 
         return rootView;
+    }
+
+    private void getPlacesData() {
+        //query places saved in database
+        Cursor cursor = getContext().getContentResolver().query(
+                PlacesEntry.PLACES_CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if(cursor == null || cursor.getCount() == 0) {
+            //display empty view and return early
+            mEmptyView.setVisibility(View.VISIBLE);
+            mAdapter.swapPlaces(null);
+            return;
+        } else {
+            mEmptyView.setVisibility(View.GONE);
+        }
+
+        //store place id in a array list
+        List<String> places = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            places.add(cursor.getString(cursor.getColumnIndex(PlacesEntry.COLUMN_PLACE_ID)));
+        }
+
+        //store GeoData in a PlaceBuffer using place id list
+        PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, places.toArray(new String[places.size()]));
+        placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
+            @Override
+            public void onResult(@NonNull PlaceBuffer places) {
+                //swap place data for recycler view
+                mAdapter.swapPlaces(places);
+            }
+        });
     }
 
     private void refreshPlacesData() {
@@ -96,6 +132,7 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
         } else {
             mEmptyView.setVisibility(View.GONE);
         }
+
         //store place id in a array list
         List<String> places = new ArrayList<>();
         while(cursor.moveToNext()) {
@@ -103,7 +140,7 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
         }
 
         //store GeoData in a PlaceBuffer using place id list
-        PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, places.toArray(new String[places.size()]));
+        final PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, places.toArray(new String[places.size()]));
         placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
             @Override
             public void onResult(@NonNull PlaceBuffer places) {
@@ -115,11 +152,14 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
 
                 //register geofences if geofence is enabled
                 if(PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getString(R.string.geofencing_key), false)) {
+                    mGeofencing.unregisterAllGeofences();
                     mGeofencing.registerAllGeofences();
                 }
             }
         });
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -139,7 +179,6 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
                     String placeId = place.getId();
 
                     //insert place to database
-                    //TODO: Use AsyncTask
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(PlacesEntry.COLUMN_PLACE_ID, placeId);
                     getContext().getContentResolver().insert(
@@ -169,10 +208,8 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
             Intent placePickerIntent = new PlacePicker.IntentBuilder().build(getActivity());
             startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
         } catch (GooglePlayServicesRepairableException e) {
-            //TODO: Help user to repair GooglePlayServices
             Log.d(LOG_TAG, "GooglePlayServicesRepairable");
         } catch (GooglePlayServicesNotAvailableException e) {
-            //TODO: Help user install GooglePlayServices
             Log.d(LOG_TAG, "GooglePlayServicesNotAvailable");
         }
     }
@@ -190,10 +227,8 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
             Intent placePickerIntent = new PlacePicker.IntentBuilder().build(getActivity());
             startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
         } catch (GooglePlayServicesRepairableException e) {
-            //TODO: Help user to repair GooglePlayServices
             Log.d(LOG_TAG, "GooglePlayServicesRepairable");
         } catch (GooglePlayServicesNotAvailableException e) {
-            //TODO: Help user install GooglePlayServices
             Log.d(LOG_TAG, "GooglePlayServicesNotAvailable");
         }
     }
