@@ -4,12 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 import com.yehyunryu.android.mywifi2.R;
 import com.yehyunryu.android.mywifi2.service.CountdownTimerService;
 import com.yehyunryu.android.mywifi2.utils.Geofencing;
+
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,86 +51,138 @@ public class HomeFragment extends Fragment {
 
         //get state of geofencing
         mIsGeofencing = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getContext().getString(R.string.geofencing_key), false);
+        long beginTime = PreferenceManager.getDefaultSharedPreferences(getContext()).getLong(getString(R.string.geofencing_time_key), -1);
+        long currentTime = System.currentTimeMillis();
+
         //set appropriate icon and text for on/off image view and button
         if(mIsGeofencing) {
-            setGeofencingOn();
+            //ON
+
+            //update ui to reflect that geofencing is on
+            mTimerTV.setVisibility(View.VISIBLE);
+            mOnOffIV.setImageResource(R.drawable.place_on_yellow);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_on));
+            }
+            mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textSecondary));
+            mOnOffButton.setText(getString(R.string.geofencing_on));
         } else {
-            setGeofencingOff();
+            //OFF
+
+            //update ui to reflect that geofencing is on
+            mTimerTV.setVisibility(View.GONE);
+            mOnOffIV.setImageResource(R.drawable.place_off);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_off));
+            }
+            mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textPrimary));
+            mOnOffButton.setText(getString(R.string.geofencing_off));
         }
 
         return rootView;
     }
 
-    @OnClick(R.id.home_onoff_button)
-    public void onButtonClick() {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //start timer service
+
+        mIsGeofencing = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getContext().getString(R.string.geofencing_key), false);
         if(mIsGeofencing) {
-            //set geofencing to false
-            mIsGeofencing = false;
-            setGeofencingOff();
-            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean(getString(R.string.geofencing_key), false).apply();
-            //unregister all geofences
-            mGeofencing.unregisterAllGeofences();
-        } else {
-            //set geofencing to true
-            mIsGeofencing = true;
-            setGeofencingOn();
-            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putBoolean(getString(R.string.geofencing_key), true).apply();
-            //register all geofences
-            mGeofencing.registerAllGeofences();
+            getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
         }
     }
 
-    private void setGeofencingOff() {
-        getActivity().stopService(new Intent(getContext(), CountdownTimerService.class));
-        mTimerTV.setVisibility(View.GONE);
-
-        //set appropriate icon and text to indicate that geofencing is off
-        mOnOffIV.setImageResource(R.drawable.place_off);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_off));
-        }
-        mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textPrimary));
-        mOnOffButton.setText(getString(R.string.geofencing_off));
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //stop timer service
+        if(mIsGeofencing) getActivity().stopService(new Intent(getContext(), CountdownTimerService.class));
     }
-
-    private void setGeofencingOn() {
-        getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
-        mTimerTV.setVisibility(View.VISIBLE);
-
-        //set appropriate icon and text to indicate that geofencing is on
-        mOnOffIV.setImageResource(R.drawable.place_on_yellow);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_on));
-        }
-        mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textSecondary));
-        mOnOffButton.setText(getString(R.string.geofencing_on));
-    }
-
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateGUI(intent);
-        }
-    };
 
     @Override
     public void onResume() {
         super.onResume();
+        //register broadcast receiver for timer service
         getActivity().registerReceiver(mBroadcastReceiver, new IntentFilter(CountdownTimerService.ACTION_COUNTDOWN));
-        Log.d(LOG_TAG, "Registered broadcast receiver");
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        //unregister broadcast receiver for timer service
         getActivity().unregisterReceiver(mBroadcastReceiver);
-        Log.d(LOG_TAG, "Unregistered broadcast receiver");
     }
 
-    private void updateGUI(Intent intent) {
+    @OnClick(R.id.home_onoff_button)
+    public void onButtonClick() {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+        if(mIsGeofencing) {
+            //TURNING OFF
+
+            //update ui to reflect that geofencing is off
+            mTimerTV.setVisibility(View.GONE);
+            mOnOffIV.setImageResource(R.drawable.place_off);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_off));
+            }
+            mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textPrimary));
+            mOnOffButton.setText(getString(R.string.geofencing_off));
+
+            //stop timer service
+            getActivity().stopService(new Intent(getContext(), CountdownTimerService.class));
+
+            //set geofencing to false and reset geofencing time
+            mIsGeofencing = false;
+            editor.putBoolean(getString(R.string.geofencing_key), false).apply();
+            editor.putLong(getString(R.string.geofencing_time_key), -1).apply();
+
+            //unregister all geofences
+            mGeofencing.unregisterAllGeofences();
+
+
+        } else {
+            //TURNING ON
+
+            //update ui to reflect that geofencing is on
+            mTimerTV.setVisibility(View.VISIBLE);
+            mOnOffIV.setImageResource(R.drawable.place_on_yellow);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_on));
+            }
+            mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textSecondary));
+            mOnOffButton.setText(getString(R.string.geofencing_on));
+
+            //start timer service
+            getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
+
+            //set geofencing to true
+            mIsGeofencing = true;
+            editor.putBoolean(getString(R.string.geofencing_key), true).apply();
+            editor.putLong(getString(R.string.geofencing_time_key), System.currentTimeMillis()).apply();
+
+            //register all geofences
+            mGeofencing.registerAllGeofences();
+        }
+    }
+
+    //broadcast receiver that listens for timer service ticks
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //update timer text view
+            updateTimer(intent);
+        }
+    };
+
+    //update timer to display correct time left
+    private void updateTimer(Intent intent) {
         if(intent.getExtras() != null) {
-            long millisUntilFinished = intent.getLongExtra("countdown", 0);
-            mTimerTV.setText(String.valueOf(millisUntilFinished));
+            long millisUntilFinished = intent.getLongExtra(getString(R.string.countdown_key), 0);
+            String formattedTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
+                    TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % TimeUnit.HOURS.toMinutes(1),
+                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % TimeUnit.MINUTES.toSeconds(1));
+            mTimerTV.setText(formattedTime);
         }
     }
 }

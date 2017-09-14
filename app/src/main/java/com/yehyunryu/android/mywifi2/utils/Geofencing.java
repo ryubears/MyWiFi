@@ -118,6 +118,6 @@ public class Geofencing implements ResultCallback {
     @Override
     public void onResult(@NonNull Result result) {
         //error logging for geofencing
-        Log.e(LOG_TAG, String.format("Error adding/removing geofence : %s", result.getStatus().toString()));
+        Log.d(LOG_TAG, String.format("Geofence Result : %s", result.getStatus().toString()));
     }
 }

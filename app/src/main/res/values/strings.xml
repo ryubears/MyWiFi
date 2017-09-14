@@ -27,6 +27,8 @@
     <string name="geofencing_on">Disconnect</string>
     <string name="geofencing_off">Connect</string>
     <string name="geofencing_key">geofencing</string>
+    <string name="geofencing_time_key">geofencing_time</string>
+    <string name="countdown_key">countdown</string>
 
     <string name="need_location_permission">Enable Location Permission First</string>
 

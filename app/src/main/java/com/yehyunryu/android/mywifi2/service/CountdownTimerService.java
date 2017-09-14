@@ -5,45 +5,74 @@ import android.content.Intent;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v7.preference.PreferenceManager;
+
+import com.yehyunryu.android.mywifi2.R;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Yehyun Ryu on 9/12/2017.
  */
 
+//service that updates time left for countdown timer
 public class CountdownTimerService extends Service {
     private static final String LOG_TAG = CountdownTimerService.class.getSimpleName();
+
+    //for broadcast receiver filter
     public static final String ACTION_COUNTDOWN = "com.yehyunryu.android.countdownbroadcast";
+
+    private static final long COUNTDOWN_DURATION = TimeUnit.DAYS.toMillis(1);
+    private static final long COUNTDOWN_INTERVAL = 1000;
+
+    //broadcast intent to notify broadcast receiver
     private Intent mBroadcastIntent = new Intent(ACTION_COUNTDOWN);
+
+    //timer
     private CountDownTimer mCountdownTimer;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Log.d(LOG_TAG, "Starting timer...");
+        //get geofence begin time and current time
+        long durationTime;
+        long beginTime = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getLong(getString(R.string.geofencing_time_key), -1);
+        long currentTime = System.currentTimeMillis();
 
-        mCountdownTimer = new CountDownTimer(30000, 1000) {
+        if(beginTime <= 0) {
+            //if geofence has not been turned on or has been turned off
+            durationTime = COUNTDOWN_DURATION;
+        } else if(currentTime - beginTime >= TimeUnit.DAYS.toMillis(1)) {
+            //if geofence exceeded geofence duration
+            durationTime = COUNTDOWN_DURATION;
+        } else {
+            //if it has been less than 24 hours since geofence has been enabled
+            durationTime = COUNTDOWN_DURATION - (currentTime - beginTime);
+        }
+
+        mCountdownTimer = new CountDownTimer(durationTime, COUNTDOWN_INTERVAL) {
             @Override
             public void onTick(long millisUntilFinished) {
-                Log.d(LOG_TAG, "Countdown seconds remaining: " + millisUntilFinished / 1000);
-                mBroadcastIntent.putExtra("countdown", millisUntilFinished);
+                //send broadcast
+                mBroadcastIntent.putExtra(getString(R.string.countdown_key), millisUntilFinished);
                 sendBroadcast(mBroadcastIntent);
             }
 
             @Override
             public void onFinish() {
-                Log.d(LOG_TAG, "Timer finished");
+                //nothing here
             }
         };
 
+        //start timer
         mCountdownTimer.start();
     }
 
     @Override
     public void onDestroy() {
+        //stop timer
         mCountdownTimer.cancel();
-        Log.d(LOG_TAG, "Timer cancelled");
         super.onDestroy();
     }
 
