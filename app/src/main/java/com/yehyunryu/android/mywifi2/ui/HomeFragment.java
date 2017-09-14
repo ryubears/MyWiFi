@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,13 +51,11 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //start timer service
+        Log.d(LOG_TAG, "onCreate");
 
         //initialize shared preferences and its editor
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         mEditor = mSharedPreferences.edit();
-
-        mToast = ((MainActivity) getActivity()).mToast;
 
         //check geofencing time and see if it exceeded geofence duration
         long beginTime = mSharedPreferences.getLong(getString(R.string.geofencing_time_key), -1);
@@ -71,6 +70,7 @@ public class HomeFragment extends Fragment {
         //get state of geofencing
         mIsGeofencing = mSharedPreferences.getBoolean(getContext().getString(R.string.geofencing_key), false);
         if(mIsGeofencing) {
+            //start timer service
             getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
         }
     }
@@ -78,12 +78,16 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onCreateView");
         //inflate and bind views
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, rootView);
 
         //get geofencing object from MainActivity
         mGeofencing = ((MainActivity) getActivity()).mGeofencing;
+
+        //get toast from main activity
+        mToast = ((MainActivity) getActivity()).mToast;
 
         //set appropriate icon and text for on/off image view and button
         if(mIsGeofencing) {

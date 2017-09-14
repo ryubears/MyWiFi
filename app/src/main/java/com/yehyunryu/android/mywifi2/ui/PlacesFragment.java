@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -71,12 +72,13 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
         mGoogleApiClient = ((MainActivity) getActivity()).mGoogleApiClient;
         mGeofencing = ((MainActivity) getActivity()).mGeofencing;
 
+        //get toast object from main activity
         mToast = ((MainActivity) getActivity()).mToast;
 
         //set layout manager and adapter to recycler view
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mPlaceRV.setLayoutManager(layoutManager);
-        mAdapter = new PlacesAdapter(getContext(), this, mToast);
+        mAdapter = new PlacesAdapter(getContext(), this, mToast); //pass in toast that was obtained from main activity
         mPlaceRV.setAdapter(mAdapter);
 
         //get place data
@@ -135,6 +137,12 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
             //display empty view and return early
             mEmptyView.setVisibility(View.VISIBLE);
             mAdapter.swapPlaces(null);
+
+            //unregister geofencing and store that info
+            mGeofencing.unregisterAllGeofences();
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+            editor.putBoolean(getString(R.string.geofencing_key), false).apply();
+            editor.putLong(getString(R.string.geofencing_time_key), -1).apply();
             return;
         } else {
             mEmptyView.setVisibility(View.GONE);

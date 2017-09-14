@@ -30,13 +30,13 @@
     <string name="geofencing_time_key">geofencing_time</string>
     <string name="countdown_key">countdown</string>
 
-    <string name="need_places_toast">Add a place to connect first!</string>
+    <string name="need_places_toast">Add a place first!</string>
 
     <!-- Places Fragment -->
     <string name="empty_view_text">Start adding places!</string>
 
-    <string name="place_delete_toast">Place deleted</string>
-    <string name="place_add_toast">Place added</string>
+    <string name="place_delete_toast">Place Deleted</string>
+    <string name="place_add_toast">Place Added</string>
     <string name="need_network_toast">Need internet connection to add places</string>
     <string name="need_location_permission_toast">Please enable location permission</string>
 
@@ -51,9 +51,9 @@
     <string name="wifi_preference_key">preference_wifi</string>
 
     <!-- Notifications -->
-    <string name="wifi_enabled_notification_title">WiFi is ON</string>
-    <string name="wifi_enabled_notification_text">MyWiFi has turned your WiFi on.</string>
-    <string name="wifi_denied_notification_title">WiFi is OFF</string>
+    <string name="wifi_enabled_notification_title">WiFi ON</string>
+    <string name="wifi_enabled_notification_text">MyWiFi has turned on your WiFi.</string>
+    <string name="wifi_denied_notification_title">WiFi OFF</string>
     <string name="wifi_denied_notification_text">Turn on your WiFi?</string>
 
 </resources>
