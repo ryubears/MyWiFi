@@ -54,14 +54,16 @@ public class CountdownTimerService extends Service {
         mCountdownTimer = new CountDownTimer(durationTime, COUNTDOWN_INTERVAL) {
             @Override
             public void onTick(long millisUntilFinished) {
-                //send broadcast
+                //send tick broadcast
                 mBroadcastIntent.putExtra(getString(R.string.countdown_key), millisUntilFinished);
                 sendBroadcast(mBroadcastIntent);
             }
 
             @Override
             public void onFinish() {
-                //nothing here
+                //send broadcast indicating timer is finished
+                mBroadcastIntent.putExtra(getString(R.string.countdown_key), Long.valueOf(-1));
+                sendBroadcast(mBroadcastIntent);
             }
         };
 
@@ -76,10 +78,6 @@ public class CountdownTimerService extends Service {
         super.onDestroy();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
-    }
 
     @Nullable
     @Override

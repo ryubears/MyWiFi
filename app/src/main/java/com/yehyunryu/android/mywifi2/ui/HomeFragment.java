@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,21 +39,45 @@ public class HomeFragment extends Fragment {
     //geofencing object and state of geofencing
     private Geofencing mGeofencing;
     private boolean mIsGeofencing;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //start timer service
+
+        //initialize shared preferences and its editor
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mEditor = mSharedPreferences.edit();
+
+        //check geofencing time and see if it exceeded geofence duration
+        long beginTime = mSharedPreferences.getLong(getString(R.string.geofencing_time_key), -1);
+        long currentTime = System.currentTimeMillis();
+        if(!(beginTime <= 0)) {
+            if(currentTime - beginTime > TimeUnit.DAYS.toMillis(1)) {
+                mEditor.putBoolean(getString(R.string.geofencing_key), false).apply();
+                mEditor.putLong(getString(R.string.geofencing_time_key), -1).apply();
+            }
+        }
+
+        //get state of geofencing
+        mIsGeofencing = mSharedPreferences.getBoolean(getContext().getString(R.string.geofencing_key), false);
+        if(mIsGeofencing) {
+            getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "onCreateView");
         //inflate and bind views
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, rootView);
 
         //get geofencing object from MainActivity
         mGeofencing = ((MainActivity) getActivity()).mGeofencing;
-
-        //get state of geofencing
-        mIsGeofencing = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getContext().getString(R.string.geofencing_key), false);
-        long beginTime = PreferenceManager.getDefaultSharedPreferences(getContext()).getLong(getString(R.string.geofencing_time_key), -1);
-        long currentTime = System.currentTimeMillis();
 
         //set appropriate icon and text for on/off image view and button
         if(mIsGeofencing) {
@@ -83,17 +108,6 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //start timer service
-
-        mIsGeofencing = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getContext().getString(R.string.geofencing_key), false);
-        if(mIsGeofencing) {
-            getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
-        }
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         //stop timer service
@@ -116,7 +130,6 @@ public class HomeFragment extends Fragment {
 
     @OnClick(R.id.home_onoff_button)
     public void onButtonClick() {
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
         if(mIsGeofencing) {
             //TURNING OFF
 
@@ -134,8 +147,8 @@ public class HomeFragment extends Fragment {
 
             //set geofencing to false and reset geofencing time
             mIsGeofencing = false;
-            editor.putBoolean(getString(R.string.geofencing_key), false).apply();
-            editor.putLong(getString(R.string.geofencing_time_key), -1).apply();
+            mEditor.putBoolean(getString(R.string.geofencing_key), false).apply();
+            mEditor.putLong(getString(R.string.geofencing_time_key), -1).apply();
 
             //unregister all geofences
             mGeofencing.unregisterAllGeofences();
@@ -158,8 +171,8 @@ public class HomeFragment extends Fragment {
 
             //set geofencing to true
             mIsGeofencing = true;
-            editor.putBoolean(getString(R.string.geofencing_key), true).apply();
-            editor.putLong(getString(R.string.geofencing_time_key), System.currentTimeMillis()).apply();
+            mEditor.putBoolean(getString(R.string.geofencing_key), true).apply();
+            mEditor.putLong(getString(R.string.geofencing_time_key), System.currentTimeMillis()).apply();
 
             //register all geofences
             mGeofencing.registerAllGeofences();
@@ -178,11 +191,35 @@ public class HomeFragment extends Fragment {
     //update timer to display correct time left
     private void updateTimer(Intent intent) {
         if(intent.getExtras() != null) {
-            long millisUntilFinished = intent.getLongExtra(getString(R.string.countdown_key), 0);
-            String formattedTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
-                    TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % TimeUnit.HOURS.toMinutes(1),
-                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % TimeUnit.MINUTES.toSeconds(1));
-            mTimerTV.setText(formattedTime);
+            long millisUntilFinished = intent.getLongExtra(getString(R.string.countdown_key), -1);
+            if(millisUntilFinished != -1) {
+                //NORMAL TICKING
+
+                //format time remaining into hh:mm:ss and set timer text
+                String formattedTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % TimeUnit.HOURS.toMinutes(1),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % TimeUnit.MINUTES.toSeconds(1));
+                mTimerTV.setText(formattedTime);
+            } else {
+                //TIMER OFF
+                
+                //update ui to reflect that geofencing is off
+                mTimerTV.setVisibility(View.GONE);
+                mOnOffIV.setImageResource(R.drawable.place_off);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_off));
+                }
+                mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textPrimary));
+                mOnOffButton.setText(getString(R.string.geofencing_off));
+
+                //stop timer service
+                getActivity().stopService(new Intent(getContext(), CountdownTimerService.class));
+
+                //set geofencing to false and reset geofencing time
+                mIsGeofencing = false;
+                mEditor.putBoolean(getString(R.string.geofencing_key), false).apply();
+                mEditor.putLong(getString(R.string.geofencing_time_key), -1).apply();
+            }
         }
     }
 }
