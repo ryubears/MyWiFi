@@ -25,6 +25,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
     private Context mContext;
     private PlaceItemDeleteListener mPlaceItemDeleteListener;
     private PlaceBuffer mPlaces;
+    private Toast mToast;
 
     //place item delete listener interface
     //used for callback
@@ -32,9 +33,10 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
         void onPlaceDelete(int position);
     }
 
-    public PlacesAdapter(Context context, PlaceItemDeleteListener listener) {
+    public PlacesAdapter(Context context, PlaceItemDeleteListener listener, Toast toast) {
         mContext = context;
         mPlaceItemDeleteListener = listener;
+        mToast = toast;
     }
 
     @Override
@@ -74,7 +76,6 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
         @BindView(R.id.place_address_tv) TextView mAddressTV;
         @BindView(R.id.place_delete_button) ImageButton mDeleteButton;
 
-        private Toast mToast;
         private int mPosition;
         private String mPlaceId;
 
@@ -95,12 +96,12 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.PlacesView
 
         @OnClick(R.id.place_delete_button)
         public void onDelete() {
+
             //display toast
             if(mToast != null) mToast.cancel();
-            mToast = Toast.makeText(itemView.getContext(), mContext.getString(R.string.toast_delete), Toast.LENGTH_SHORT);
+            mToast = Toast.makeText(itemView.getContext(), mContext.getString(R.string.place_delete_toast), Toast.LENGTH_SHORT);
             mToast.show();
 
-            //TODO: Use AsyncTask
             //delete place
             mContext.getContentResolver().delete(
                     PlacesContract.PlacesEntry.PLACES_CONTENT_URI,

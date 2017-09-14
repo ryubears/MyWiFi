@@ -2,9 +2,12 @@ package com.yehyunryu.android.mywifi2.ui;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -54,6 +57,8 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
     private Geofencing mGeofencing;
     private PlacesAdapter mAdapter;
 
+    private Toast mToast;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -62,15 +67,17 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
         View rootView = inflater.inflate(R.layout.fragment_places, container, false);
         ButterKnife.bind(this, rootView);
 
-        //set layout manager and adapter to recycler view
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mPlaceRV.setLayoutManager(layoutManager);
-        mAdapter = new PlacesAdapter(getContext(), this);
-        mPlaceRV.setAdapter(mAdapter);
-
         //get google api client and geofencing object
         mGoogleApiClient = ((MainActivity) getActivity()).mGoogleApiClient;
         mGeofencing = ((MainActivity) getActivity()).mGeofencing;
+
+        mToast = ((MainActivity) getActivity()).mToast;
+
+        //set layout manager and adapter to recycler view
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mPlaceRV.setLayoutManager(layoutManager);
+        mAdapter = new PlacesAdapter(getContext(), this, mToast);
+        mPlaceRV.setAdapter(mAdapter);
 
         //get place data
         getPlacesData();
@@ -188,6 +195,11 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
 
                     //refresh place data
                     refreshPlacesData();
+
+                    //show place added toast
+                    if(mToast != null) mToast.cancel();
+                    mToast = Toast.makeText(getContext(), getString(R.string.place_add_toast), Toast.LENGTH_SHORT);
+                    mToast.show();
                 }
                 return;
             default:
@@ -197,45 +209,48 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
 
     @OnClick(R.id.places_fab)
     public void onAddClick() {
-        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //TODO: Automatically switch to settings fragment
-            //show toast message
-            Toast.makeText(getContext(), getString(R.string.need_location_permission), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            //build place picker intent and start it
-            Intent placePickerIntent = new PlacePicker.IntentBuilder().build(getActivity());
-            startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
-        } catch (GooglePlayServicesRepairableException e) {
-            Log.d(LOG_TAG, "GooglePlayServicesRepairable");
-        } catch (GooglePlayServicesNotAvailableException e) {
-            Log.d(LOG_TAG, "GooglePlayServicesNotAvailable");
-        }
+        addPlace();
     }
 
     @OnClick(R.id.places_empty_view)
     public void onEmptyClick() {
-        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //TODO: Automatically switch to settings fragment
-            //show toast message
-            Toast.makeText(getContext(), getString(R.string.need_location_permission), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            //build place picker intent and start it
-            Intent placePickerIntent = new PlacePicker.IntentBuilder().build(getActivity());
-            startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
-        } catch (GooglePlayServicesRepairableException e) {
-            Log.d(LOG_TAG, "GooglePlayServicesRepairable");
-        } catch (GooglePlayServicesNotAvailableException e) {
-            Log.d(LOG_TAG, "GooglePlayServicesNotAvailable");
-        }
+        addPlace();
     }
 
     @Override
     public void onPlaceDelete(int position) {
         //refresh place data when place item is deleted
         refreshPlacesData();
+    }
+
+    private void addPlace() {
+        //check internet connection
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(!(networkInfo != null && networkInfo.isConnectedOrConnecting())) {
+            if(mToast != null) mToast.cancel();
+            mToast = Toast.makeText(getContext(), getString(R.string.need_network_toast), Toast.LENGTH_SHORT);
+            mToast.show();
+            return;
+        }
+
+        //check location permission
+        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //show toast message
+            if(mToast != null) mToast.cancel();
+            mToast = Toast.makeText(getContext(), getString(R.string.need_location_permission_toast), Toast.LENGTH_SHORT);
+            mToast.show();
+            return;
+        }
+
+        try {
+            //build place picker intent and start it
+            Intent placePickerIntent = new PlacePicker.IntentBuilder().build(getActivity());
+            startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+            Log.d(LOG_TAG, "GooglePlayServicesRepairable");
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Log.d(LOG_TAG, "GooglePlayServicesNotAvailable");
+        }
     }
 }

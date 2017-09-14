@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final String TAG_HOME = "home";
     private static final String TAG_PLACES = "places";
     private static final String TAG_SETTINGS = "settings";
-    public static String CURRENT_TAG = TAG_HOME;
+    public static String sCurrentTag = TAG_HOME;
 
     //toolbar titles respected to selected nav menu item
     private String[] mActivityTitles;
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //GoogleApiClient to access Google Apis
     public GoogleApiClient mGoogleApiClient;
     public Geofencing mGeofencing;
+
+    public Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //use default values if first time opening
         if(savedInstanceState == null) {
             sNavItemIndex = 0;
-            CURRENT_TAG = TAG_HOME;
+            sCurrentTag = TAG_HOME;
             loadFragment();
         }
 
@@ -104,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     //loads selected fragment
-    private void loadFragment() {
+    public void loadFragment() {
         //select appropriate menu item
         selectNavMenu();
 
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setToolbarBackground();
 
         //checks to see if user selected current fragment; if so, just closes drawer
-        if(getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
+        if(getSupportFragmentManager().findFragmentByTag(sCurrentTag) != null) {
             mDrawerLayout.closeDrawers();
             return;
         }
@@ -127,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Fragment fragment = getFragment();
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-                fragmentTransaction.replace(R.id.main_frame, fragment, CURRENT_TAG);
+                fragmentTransaction.replace(R.id.main_frame, fragment, sCurrentTag);
                 fragmentTransaction.commitAllowingStateLoss();
             }
         };
@@ -189,15 +192,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 switch (menuItem.getItemId()) {
                     case R.id.nav_home:
                         sNavItemIndex = 0;
-                        CURRENT_TAG = TAG_HOME;
+                        sCurrentTag = TAG_HOME;
                         break;
                     case R.id.nav_places:
                         sNavItemIndex = 1;
-                        CURRENT_TAG = TAG_PLACES;
+                        sCurrentTag = TAG_PLACES;
                         break;
                     case R.id.nav_settings:
                         sNavItemIndex = 2;
-                        CURRENT_TAG = TAG_SETTINGS;
+                        sCurrentTag = TAG_SETTINGS;
                         break;
                     case R.id.nav_contact_us:
                         mDrawerLayout.closeDrawers();
@@ -255,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if(shouldLoadHomeFragOnBackPress) {
             if(sNavItemIndex != 0) {
                 sNavItemIndex = 0;
-                CURRENT_TAG = TAG_HOME;
+                sCurrentTag = TAG_HOME;
                 loadFragment();
                 return;
             }

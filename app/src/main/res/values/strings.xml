@@ -30,11 +30,15 @@
     <string name="geofencing_time_key">geofencing_time</string>
     <string name="countdown_key">countdown</string>
 
-    <string name="need_location_permission">Enable Location Permission First</string>
+    <string name="need_places_toast">Add a place to connect first!</string>
 
     <!-- Places Fragment -->
-    <string name="toast_delete">Item Deleted</string>
     <string name="empty_view_text">Start adding places!</string>
+
+    <string name="place_delete_toast">Place deleted</string>
+    <string name="place_add_toast">Place added</string>
+    <string name="need_network_toast">Need internet connection to add places</string>
+    <string name="need_location_permission_toast">Please enable location permission</string>
 
     <!-- Settings Preference Fragment-->
     <string name="summary_off">Disabled</string>

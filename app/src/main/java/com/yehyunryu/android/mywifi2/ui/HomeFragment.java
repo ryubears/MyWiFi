@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yehyunryu.android.mywifi2.R;
 import com.yehyunryu.android.mywifi2.service.CountdownTimerService;
@@ -27,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.yehyunryu.android.mywifi2.data.PlacesContract.PlacesEntry;
 
 public class HomeFragment extends Fragment {
     @BindView(R.id.home_onoff_iv) ImageView mOnOffIV;
@@ -41,6 +45,8 @@ public class HomeFragment extends Fragment {
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
 
+    private Toast mToast;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +55,8 @@ public class HomeFragment extends Fragment {
         //initialize shared preferences and its editor
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         mEditor = mSharedPreferences.edit();
+
+        mToast = ((MainActivity) getActivity()).mToast;
 
         //check geofencing time and see if it exceeded geofence duration
         long beginTime = mSharedPreferences.getLong(getString(R.string.geofencing_time_key), -1);
@@ -155,25 +163,40 @@ public class HomeFragment extends Fragment {
         } else {
             //TURNING ON
 
-            //update ui to reflect that geofencing is on
-            mTimerTV.setVisibility(View.VISIBLE);
-            mOnOffIV.setImageResource(R.drawable.place_on_yellow);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_on));
+            //query places saved in database
+            Cursor cursor = getContext().getContentResolver().query(
+                    PlacesEntry.PLACES_CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+
+            if(cursor == null || cursor.getCount() == 0) {
+                if(mToast != null) mToast.cancel();
+                mToast = Toast.makeText(getContext(), getString(R.string.need_places_toast), Toast.LENGTH_SHORT);
+                mToast.show();
+            } else {
+                //update ui to reflect that geofencing is on
+                mTimerTV.setVisibility(View.VISIBLE);
+                mOnOffIV.setImageResource(R.drawable.place_on_yellow);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_on));
+                }
+                mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textSecondary));
+                mOnOffButton.setText(getString(R.string.geofencing_on));
+
+                //start timer service
+                getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
+
+                //set geofencing to true
+                mIsGeofencing = true;
+                mEditor.putBoolean(getString(R.string.geofencing_key), true).apply();
+                mEditor.putLong(getString(R.string.geofencing_time_key), System.currentTimeMillis()).apply();
+
+                //register all geofences
+                mGeofencing.registerAllGeofences();
             }
-            mOnOffButton.setTextColor(ContextCompat.getColor(getContext(), R.color.textSecondary));
-            mOnOffButton.setText(getString(R.string.geofencing_on));
-
-            //start timer service
-            getActivity().startService(new Intent(getContext(), CountdownTimerService.class));
-
-            //set geofencing to true
-            mIsGeofencing = true;
-            mEditor.putBoolean(getString(R.string.geofencing_key), true).apply();
-            mEditor.putLong(getString(R.string.geofencing_time_key), System.currentTimeMillis()).apply();
-
-            //register all geofences
-            mGeofencing.registerAllGeofences();
         }
     }
 
