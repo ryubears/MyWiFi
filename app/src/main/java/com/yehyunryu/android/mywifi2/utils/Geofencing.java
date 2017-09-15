@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class Geofencing implements ResultCallback {
     private static final String LOG_TAG = Geofencing.class.getSimpleName();
     private static final long GEOFENCE_DURATION = TimeUnit.DAYS.toMillis(1);
-    private static final float GEOFENCE_RADIUS = 100f;
+    private static final float GEOFENCE_RADIUS = 125f; //125 meters
 
     private List<Geofence> mGeofenceList;
     private PendingIntent mGeofencePendingIntent;
@@ -47,6 +47,7 @@ public class Geofencing implements ResultCallback {
         //if google api client is not connected or if geofence list is empty return early
         if(mGoogleApiClient == null || !mGoogleApiClient.isConnected() ||
                 mGeofenceList == null || mGeofenceList.size() == 0) {
+            Log.d(LOG_TAG, "Empty Geofences");
             return;
         }
 
@@ -60,6 +61,7 @@ public class Geofencing implements ResultCallback {
         } catch (SecurityException e) {
             Log.e(LOG_TAG, e.getMessage());
         }
+        Log.d(LOG_TAG, "Geofences Registered");
     }
 
     public void unregisterAllGeofences() {
@@ -75,6 +77,7 @@ public class Geofencing implements ResultCallback {
         } catch(SecurityException e) {
             Log.e(LOG_TAG, e.getMessage());
         }
+        Log.d(LOG_TAG, "Geofences Unregistered");
     }
 
     public void updateGeofencesList(PlaceBuffer places) {

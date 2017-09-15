@@ -23,7 +23,6 @@
         android:layout_height="160dp"
         android:src="@drawable/place_on_yellow"
         android:scaleType="centerCrop"
-        android:visibility="visible"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

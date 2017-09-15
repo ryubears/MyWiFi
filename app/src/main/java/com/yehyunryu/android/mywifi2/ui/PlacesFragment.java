@@ -58,12 +58,14 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
     private Geofencing mGeofencing;
     private PlacesAdapter mAdapter;
 
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mEditor;
+
     private Toast mToast;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         //inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_places, container, false);
         ButterKnife.bind(this, rootView);
@@ -71,6 +73,10 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
         //get google api client and geofencing object
         mGoogleApiClient = ((MainActivity) getActivity()).mGoogleApiClient;
         mGeofencing = ((MainActivity) getActivity()).mGeofencing;
+
+        //get shared preference and editor
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mEditor = mSharedPreferences.edit();
 
         //get toast object from main activity
         mToast = ((MainActivity) getActivity()).mToast;
@@ -86,95 +92,6 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
 
         return rootView;
     }
-
-    private void getPlacesData() {
-        //query places saved in database
-        Cursor cursor = getContext().getContentResolver().query(
-                PlacesEntry.PLACES_CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-        );
-
-        if(cursor == null || cursor.getCount() == 0) {
-            //display empty view and return early
-            mEmptyView.setVisibility(View.VISIBLE);
-            mAdapter.swapPlaces(null);
-            return;
-        } else {
-            mEmptyView.setVisibility(View.GONE);
-        }
-
-        //store place id in a array list
-        List<String> places = new ArrayList<>();
-        while(cursor.moveToNext()) {
-            places.add(cursor.getString(cursor.getColumnIndex(PlacesEntry.COLUMN_PLACE_ID)));
-        }
-
-        //store GeoData in a PlaceBuffer using place id list
-        PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, places.toArray(new String[places.size()]));
-        placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
-            @Override
-            public void onResult(@NonNull PlaceBuffer places) {
-                //swap place data for recycler view
-                mAdapter.swapPlaces(places);
-            }
-        });
-    }
-
-    private void refreshPlacesData() {
-        //query places saved in database
-        Cursor cursor = getContext().getContentResolver().query(
-                PlacesEntry.PLACES_CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-        );
-
-        if(cursor == null || cursor.getCount() == 0) {
-            //display empty view and return early
-            mEmptyView.setVisibility(View.VISIBLE);
-            mAdapter.swapPlaces(null);
-
-            //unregister geofencing and store that info
-            mGeofencing.unregisterAllGeofences();
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
-            editor.putBoolean(getString(R.string.geofencing_key), false).apply();
-            editor.putLong(getString(R.string.geofencing_time_key), -1).apply();
-            return;
-        } else {
-            mEmptyView.setVisibility(View.GONE);
-        }
-
-        //store place id in a array list
-        List<String> places = new ArrayList<>();
-        while(cursor.moveToNext()) {
-            places.add(cursor.getString(cursor.getColumnIndex(PlacesEntry.COLUMN_PLACE_ID)));
-        }
-
-        //store GeoData in a PlaceBuffer using place id list
-        final PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, places.toArray(new String[places.size()]));
-        placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
-            @Override
-            public void onResult(@NonNull PlaceBuffer places) {
-                //swap place data for recycler view
-                mAdapter.swapPlaces(places);
-
-                //update geofence list
-                mGeofencing.updateGeofencesList(places);
-
-                //register geofences if geofence is enabled
-                if(PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getString(R.string.geofencing_key), false)) {
-                    mGeofencing.unregisterAllGeofences();
-                    mGeofencing.registerAllGeofences();
-                }
-            }
-        });
-    }
-
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -229,6 +146,110 @@ public class PlacesFragment extends Fragment implements PlacesAdapter.PlaceItemD
     public void onPlaceDelete(int position) {
         //refresh place data when place item is deleted
         refreshPlacesData();
+    }
+
+    private void getPlacesData() {
+        //query places saved in database
+        Cursor cursor = getContext().getContentResolver().query(
+                PlacesEntry.PLACES_CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if(cursor == null || cursor.getCount() == 0) {
+            //NO PLACES
+
+            //display empty view and return early
+            mEmptyView.setVisibility(View.VISIBLE);
+            mAdapter.swapPlaces(null);
+
+            //unregister geofencing and store that info
+            mGeofencing.unregisterAllGeofences();
+            mEditor.putBoolean(getString(R.string.geofencing_key), false).apply();
+            mEditor.putLong(getString(R.string.geofencing_time_key), -1).apply();
+            return;
+        } else {
+            //AT LEAST ONE PLACE STORED
+
+            //hide empty view
+            mEmptyView.setVisibility(View.GONE);
+        }
+
+        //store place id in a array list
+        List<String> places = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            places.add(cursor.getString(cursor.getColumnIndex(PlacesEntry.COLUMN_PLACE_ID)));
+        }
+
+        //store GeoData in a PlaceBuffer using place id list
+        final PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, places.toArray(new String[places.size()]));
+        placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
+            @Override
+            public void onResult(@NonNull PlaceBuffer places) {
+                //swap place data for recycler view
+                mAdapter.swapPlaces(places);
+            }
+        });
+
+        //close cursor
+        cursor.close();
+    }
+
+    private void refreshPlacesData() {
+        //query places saved in database
+        Cursor cursor = getContext().getContentResolver().query(
+                PlacesEntry.PLACES_CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if(cursor == null || cursor.getCount() == 0) {
+            //NO PLACES
+
+            //display empty view and return early
+            mEmptyView.setVisibility(View.VISIBLE);
+            mAdapter.swapPlaces(null);
+
+            //unregister geofencing and store that info
+            mEditor.putBoolean(getString(R.string.geofencing_key), false).apply();
+            mEditor.putLong(getString(R.string.geofencing_time_key), -1).apply();
+            mGeofencing.unregisterAllGeofences();
+            return;
+        } else {
+            //AT LEAST ONE PLACE STORED
+
+            //hide empty view
+            mEmptyView.setVisibility(View.GONE);
+        }
+
+        //store place id in a array list
+        List<String> places = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            places.add(cursor.getString(cursor.getColumnIndex(PlacesEntry.COLUMN_PLACE_ID)));
+        }
+
+        //store GeoData in a PlaceBuffer using place id list
+        final PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, places.toArray(new String[places.size()]));
+        placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
+            @Override
+            public void onResult(@NonNull PlaceBuffer places) {
+                //swap place data for recycler view
+                mAdapter.swapPlaces(places);
+
+                //update geofence list and register geofences if geofences are enabled
+                if(PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getString(R.string.geofencing_key), false)) {
+                    mGeofencing.updateGeofencesList(places);
+                    mGeofencing.registerAllGeofences();
+                }
+            }
+        });
+
+        //close cursor
+        cursor.close();
     }
 
     private void addPlace() {

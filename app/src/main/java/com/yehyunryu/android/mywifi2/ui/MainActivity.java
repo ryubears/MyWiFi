@@ -106,6 +106,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mGeofencing = new Geofencing(this, mGoogleApiClient);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(LOG_TAG, "onResume");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "onPause");
+        mGoogleApiClient.disconnect();
+    }
+
     //loads selected fragment
     public void loadFragment() {
         //select appropriate menu item
