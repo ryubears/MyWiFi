@@ -6,7 +6,7 @@
     tools:context="com.yehyunryu.android.mywifi2.ui.HomeFragment">
 
     <ImageView
-        android:id="@+id/home_onoff_iv"
+        android:id="@+id/home_off_iv"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:src="@drawable/place_off"
@@ -15,7 +15,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintVertical_bias="0.35"/>
+        app:layout_constraintVertical_bias="0.32"/>
+
+    <ImageView
+        android:id="@+id/home_on_iv"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:src="@drawable/place_on_yellow"
+        android:scaleType="centerCrop"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintVertical_bias="0.32"/>
 
     <TextView
         android:id="@+id/home_timer"
@@ -26,7 +39,7 @@
         android:textColor="@android:color/black"
         android:textSize="28sp"
         android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@id/home_onoff_iv"
+        app:layout_constraintTop_toBottomOf="@id/home_off_iv"
         app:layout_constraintBottom_toTopOf="@+id/home_onoff_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
@@ -43,7 +56,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         style="@style/Widget.AppCompat.Button.Borderless"
-        app:layout_constraintTop_toBottomOf="@id/home_onoff_iv"
+        app:layout_constraintTop_toBottomOf="@id/home_off_iv"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
