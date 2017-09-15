@@ -5,48 +5,46 @@
     android:layout_height="match_parent"
     tools:context="com.yehyunryu.android.mywifi2.ui.HomeFragment">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+    <ImageView
+        android:id="@+id/home_onoff_iv"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:src="@drawable/place_off"
+        android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintVertical_bias="0.4">
+        app:layout_constraintVertical_bias="0.35"/>
 
-        <ImageView
-            android:id="@+id/home_onoff_iv"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:src="@drawable/place_off"
-            android:scaleType="centerCrop" />
+    <TextView
+        android:id="@+id/home_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:gravity="center"
+        tools:text="24:00:00"
+        android:textColor="@android:color/black"
+        android:textSize="28sp"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/home_onoff_iv"
+        app:layout_constraintBottom_toTopOf="@+id/home_onoff_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
-        <TextView
-            android:id="@+id/home_timer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            tools:text="24:00:00"
-            android:textColor="@android:color/black"
-            android:textSize="28sp"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"/>
-
-
-        <Button
-            android:id="@+id/home_onoff_button"
-            android:layout_width="144dp"
-            android:layout_height="wrap_content"
-            android:text="@string/geofencing_off"
-            android:textColor="@android:color/black"
-            android:background="@drawable/geofencing_button_off"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/home_onoff_button"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:text="@string/geofencing_off"
+        android:textColor="@android:color/black"
+        android:background="@drawable/geofencing_button_off"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        app:layout_constraintTop_toBottomOf="@id/home_onoff_iv"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

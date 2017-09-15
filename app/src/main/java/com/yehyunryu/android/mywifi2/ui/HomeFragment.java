@@ -1,5 +1,6 @@
 package com.yehyunryu.android.mywifi2.ui;
 
+import android.animation.Animator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +51,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "onCreate");
 
         //initialize shared preferences and its editor
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -78,7 +77,6 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "onCreateView");
         //inflate and bind views
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, rootView);
@@ -93,8 +91,38 @@ public class HomeFragment extends Fragment {
         if(mIsGeofencing) {
             //ON
 
+            //fade in timer and move the icon and the button apart
+            mTimerTV.animate()
+                    .alpha(1.0f)
+                    .setDuration(500)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            mOnOffIV.animate()
+                                    .translationY(-52)
+                                    .setDuration(500);
+                            mOnOffButton.animate()
+                                    .translationY(53)
+                                    .setDuration(500);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            mTimerTV.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+                            //nothing
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+                            //nothing
+                        }
+                    });
+
             //update ui to reflect that geofencing is on
-            mTimerTV.setVisibility(View.VISIBLE);
             mOnOffIV.setImageResource(R.drawable.place_on_yellow);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_on));
@@ -104,8 +132,38 @@ public class HomeFragment extends Fragment {
         } else {
             //OFF
 
+            //fade out timer and move the icon and the button back together
+            mTimerTV.animate()
+                    .alpha(0f)
+                    .setDuration(500)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            mOnOffIV.animate()
+                                    .translationY(0)
+                                    .setDuration(500);
+                            mOnOffButton.animate()
+                                    .translationY(0)
+                                    .setDuration(500);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            mTimerTV.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+                            //nothing
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+                            //nothing
+                        }
+                    });
+
             //update ui to reflect that geofencing is on
-            mTimerTV.setVisibility(View.GONE);
             mOnOffIV.setImageResource(R.drawable.place_off);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_off));
@@ -143,8 +201,38 @@ public class HomeFragment extends Fragment {
         if(mIsGeofencing) {
             //TURNING OFF
 
+            //fade out timer and move icon and button together
+            mTimerTV.animate()
+                    .alpha(0f)
+                    .setDuration(500)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            mOnOffIV.animate()
+                                    .translationY(0)
+                                    .setDuration(500);
+                            mOnOffButton.animate()
+                                    .translationY(0)
+                                    .setDuration(500);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            mTimerTV.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+                            //nothing
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+                            //nothing
+                        }
+                    });
+
             //update ui to reflect that geofencing is off
-            mTimerTV.setVisibility(View.GONE);
             mOnOffIV.setImageResource(R.drawable.place_off);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_off));
@@ -177,12 +265,44 @@ public class HomeFragment extends Fragment {
             );
 
             if(cursor == null || cursor.getCount() == 0) {
+                //show toast if there are no place to register
                 if(mToast != null) mToast.cancel();
                 mToast = Toast.makeText(getContext(), getString(R.string.need_places_toast), Toast.LENGTH_SHORT);
                 mToast.show();
             } else {
+
+                //fade in timer and move icon and button apart
+                mTimerTV.animate()
+                        .alpha(1.0f)
+                        .setDuration(500)
+                        .setListener(new Animator.AnimatorListener() {
+                             @Override
+                             public void onAnimationStart(Animator animator) {
+                                 mOnOffIV.animate()
+                                         .translationY(-52)
+                                         .setDuration(500);
+                                 mOnOffButton.animate()
+                                         .translationY(53)
+                                         .setDuration(500);
+                             }
+
+                             @Override
+                             public void onAnimationEnd(Animator animator) {
+                                 mTimerTV.setVisibility(View.VISIBLE);
+                             }
+
+                             @Override
+                             public void onAnimationCancel(Animator animator) {
+                                 //nothing
+                             }
+
+                             @Override
+                             public void onAnimationRepeat(Animator animator) {
+                                 //nothing
+                             }
+                        });
+
                 //update ui to reflect that geofencing is on
-                mTimerTV.setVisibility(View.VISIBLE);
                 mOnOffIV.setImageResource(R.drawable.place_on_yellow);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     mOnOffButton.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.geofencing_button_on));
