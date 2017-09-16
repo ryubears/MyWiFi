@@ -6,13 +6,66 @@
     android:layout_height="match_parent"
     tools:context="com.yehyunryu.android.mywifi2.ui.PrivacyPolicyActivity">
 
+    <ImageView
+        android:id="@+id/privacy_iv"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:src="@drawable/privacy"
+        android:layout_marginTop="36dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
     <TextView
+        android:id="@+id/google_location_policy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Privacy Policy"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/google_location_policy"
+        android:textColor="@color/textPrimary"
+        android:textSize="24sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/privacy_iv"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <ScrollView
+        android:id="@+id/privacy_text"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_marginTop="24dp"
+        android:fadingEdge="vertical"
+        android:fadingEdgeLength="54dp"
+        app:layout_constraintTop_toBottomOf="@id/google_location_policy"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/google_location_policy_text"
+            android:textColor="@color/textSecondary"
+            android:textSize="18sp"
+            android:breakStrategy="high_quality"
+            android:gravity="center_horizontal"
+            android:paddingLeft="36dp"
+            android:paddingRight="36dp" />
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/privacy_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_policy_link"
+        android:textSize="18sp"
+        android:textColor="@color/textPrimary"
+        android:background="@drawable/privacy_policy_item_selector"
+        android:layout_marginRight="40dp"
+        android:layout_marginEnd="40dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        app:layout_constraintTop_toBottomOf="@id/privacy_text"
         app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

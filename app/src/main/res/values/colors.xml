@@ -12,5 +12,5 @@
 
     <color name="geofencingPressedOff">#FDF3D8</color>
     <color name="geofencingPressedOn">#E5E5E5</color>
-    <color name="contactUsPressed">#40b2b2b2</color>
+    <color name="colorPressed">#40b2b2b2</color>
 </resources>
