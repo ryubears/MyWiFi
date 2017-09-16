@@ -26,6 +26,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.yehyunryu.android.mywifi2.R;
 import com.yehyunryu.android.mywifi2.utils.Geofencing;
 
@@ -92,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public GoogleApiClient mGoogleApiClient;
     public Geofencing mGeofencing;
 
+    //firebase analytics
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     public Toast mToast;
 
     @Override
@@ -99,6 +103,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
+
+        //initialize Firebase Analytics
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         //initialize Admob
         MobileAds.initialize(this, getString(R.string.ADMOB_APP_ID));
