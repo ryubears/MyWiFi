@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -71,6 +72,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
+
+        //initialize Admob
+        MobileAds.initialize(this, getString(R.string.ADMOB_APP_ID));
 
         //find and attach toolbar
         mAppBarLayout = findViewById(R.id.main_app_bar_layout);

@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -47,6 +49,7 @@ public class HomeFragment extends Fragment {
     @BindView(R.id.home_on_iv) ImageView mOnIV;
     @BindView(R.id.home_onoff_button) Button mOnOffButton;
     @BindView(R.id.home_timer) TextView mTimerTV;
+    @BindView(R.id.home_banner_ad) AdView mBannerAd;
 
     private static final String LOG_TAG = HomeFragment.class.getSimpleName();
     private static final boolean ON_START = true;
@@ -114,6 +117,11 @@ public class HomeFragment extends Fragment {
             //update views to show current state
             showGeofencingOff(ON_START);
         }
+
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("6254ECF70C924212D6323B9DE3BF409F")
+                .build();
+        mBannerAd.loadAd(adRequest);
 
         return rootView;
     }
