@@ -32,7 +32,8 @@
 
         <activity
             android:name=".ui.ContactUsActivity"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:label="@string/contact_us_label">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -40,7 +41,8 @@
 
         <activity
             android:name=".ui.PrivacyPolicyActivity"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:label="@string/privacy_policy_label">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />

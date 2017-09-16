@@ -56,4 +56,14 @@
     <string name="wifi_denied_notification_title">WiFi OFF</string>
     <string name="wifi_denied_notification_text">Turn on your WiFi?</string>
 
+    <!-- Contact Us Activity -->
+    <string name="contact_us_label">Contact Us</string>
+    <string name="email_text">Send an Email</string>
+    <string name="facebook_text">Like us on Facebook</string>
+    <string name="github_text">Follow us on Github</string>
+    <string name="playstore_text">Rate us on Playstore</string>
+
+    <!-- Privacy Policy Activity -->
+    <string name="privacy_policy_label">Privacy Policy</string>
+
 </resources>
