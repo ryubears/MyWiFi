@@ -69,6 +69,6 @@
     <string name="google_location_policy_text">
         When you use Google services, we may collect and process information about your actual location. We use various technologies to determine location, including IP address, GPS, and other sensors that may, for example, provide Google with information on nearby devices, Wi-Fi access points and cell towers.
     </string>
-    <string name="privacy_policy_link">More Info</string>
+    <string name="privacy_policy_link">Read More</string>
 
 </resources>

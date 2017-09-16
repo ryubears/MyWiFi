@@ -33,6 +33,33 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
 
+/**
+ * Copyright 2017 Yehyun Ryu
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+/**
+ * app_logo.png, wifi_off.png, wifi.on.png, facebook_logo.png, privacy.png
+ * Above icons are made by Freepik(www.flaticon.com/authors/freepik) from Flaticon. Flaticon(www.flaticon.com/) is licensed by Creative Commons BY 3.0(http://creativecommons.org/licenses/by/3.0/)
+ * email_logo.png
+ * Above icon is made by Iconnice(www.flaticon.com/authors/iconnice) from Flaticon. Flaticon(www.flaticon.com is licensed by Creative Commons BY 3.0(http://creativecommons.org/licenses/by/3.0/)
+ * empty_place.png, playstore_logo.png, place_black.png, place_off.png, place_on_yellow.png
+ * Above icons are made by Smashicons(www.flaticon.com/authors/smashicons) from Flaticon. Flaticon(www.flaticon.com) is licensed by Creative Commons BY 3.0(http://creativecommons.org/licenses/by/3.0/)
+ * github_logo.png
+ * Above icon is made by Dave Gandy(www.flaticon.com/authors/dave-gancy) from Flaticon. Flaticon(www.flaticon.com) is licensed by Creative Commons BY 3.0(http://creativecommons.org/licenses/by/3.0/)
+ */
+
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     @BindView(R.id.main_nav_view) NavigationView mNavigationView;
     @BindView(R.id.main_drawer_layout) DrawerLayout mDrawerLayout;
