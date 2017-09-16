@@ -20,6 +20,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_LOCATION_API_KEY" />
 
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="${crashlyticsApiKey}" />
+
         <activity
             android:name=".ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
