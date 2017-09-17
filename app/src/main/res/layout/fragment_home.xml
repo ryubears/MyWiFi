@@ -69,6 +69,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/BANNER_UNIT_ID" />
+        ads:adUnitId="@string/home_banner_unit_id" />
 
 </android.support.constraint.ConstraintLayout>

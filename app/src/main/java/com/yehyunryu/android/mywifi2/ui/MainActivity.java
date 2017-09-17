@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         //initialize Admob
-        MobileAds.initialize(this, getString(R.string.ADMOB_APP_ID));
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
 
         //find and attach toolbar
         mAppBarLayout = findViewById(R.id.main_app_bar_layout);

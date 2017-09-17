@@ -30,13 +30,11 @@ android {
         applicationId "com.yehyunryu.android.mywifi2"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 5
-        versionName "1.4"
+        versionCode 6
+        versionName "1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         resValue "string", "GOOGLE_LOCATION_API_KEY", GoogleLocationApiKey
-        resValue "string", "ADMOB_APP_ID", AdmobAppId
-        resValue "string", "BANNER_UNIT_ID", BannerUnitId
 
         manifestPlaceholders = [crashlyticsApiKey: CrashlyticsApiKey]
     }
@@ -63,6 +61,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:11.2.2'
     compile 'com.google.android.gms:play-services-ads:11.2.2'
     compile 'com.google.firebase:firebase-core:11.2.2'
+    compile 'com.google.firebase:firebase-ads:11.2.2'
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     testCompile 'junit:junit:4.12'

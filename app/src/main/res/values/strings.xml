@@ -71,4 +71,8 @@
     </string>
     <string name="privacy_policy_link">Read More</string>
 
+    <!-- Admob -->
+    <string name="admob_app_id">ca-app-pub-4336412680099916~7325799525</string>
+    <string name="home_banner_unit_id">ca-app-pub-4336412680099916/9349327639</string>
+
 </resources>
