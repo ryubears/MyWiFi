@@ -20,7 +20,7 @@ android {
         config {
             keyAlias KeyAlias
             keyPassword KeyPassword
-            storeFile file('$rootDir/keystore.jks')
+            storeFile file("$rootDir/keystore.jks")
             storePassword KeystorePassword
         }
     }
@@ -30,8 +30,8 @@ android {
         applicationId "com.yehyunryu.android.mywifi2"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         resValue "string", "GOOGLE_LOCATION_API_KEY", GoogleLocationApiKey
