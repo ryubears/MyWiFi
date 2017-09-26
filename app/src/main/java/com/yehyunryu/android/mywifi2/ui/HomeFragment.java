@@ -171,7 +171,7 @@ public class HomeFragment extends Fragment {
         });
 
         AdRequest adRequest = new AdRequest.Builder()
-                //.addTestDevice("6254ECF70C924212D6323B9DE3BF409F")
+                .addTestDevice("6254ECF70C924212D6323B9DE3BF409F")
                 .build();
         mBannerAd.loadAd(adRequest);
 
